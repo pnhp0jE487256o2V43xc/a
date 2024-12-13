@@ -10,11 +10,11 @@ end
 getgenv().JISATSU = true
 
 local Settings = {
-    ["prefix"] = "<",
-    ["whitelisted"] = {},
-    ["blacklistedPlayers"] = {"Instlgator","blue20043","Arman2oooo","aonhayhoinon011","KsiPrimeUwu","BarfinOnTheHomeless","immutate","Famouson4chan","ospedaIe","FAMUSPURPLE","Muffins4evar","an1emono"},
-    ["autoruncmds"] = {"nok", "antikick", "anticolkick", "clrlogs"},
-    ["vars"] = {purgemethod = "rocket"},
+    ["prefix"] = "<", -- Prefix used for running commands
+    ["whitelisted"] = {}, -- People whitelisted by default
+    ["blacklistedPlayers"] = {"Instlgator","blue20043","Arman2oooo","aonhayhoinon011","KsiPrimeUwu","BarfinOnTheHomeless","immutate","Famouson4chan","ospedaIe","FAMUSPURPLE","Muffins4evar","an1emono"}, -- People banned by default
+    ["autoruncmds"] = {"nok", "antikick", "anticolkick"}, -- Commands to run automatically
+    ["vars"] = {purgemethod = "rocket"}, -- Rocketkick
     ["mymusiconly"] = true,
     ["mymusiconly_ID"] = 9046863579,
     ["hidegears"] = "00000000000000000000000000000000000000000000",
@@ -23,15 +23,10 @@ local Settings = {
     ["antilogs"] = true,
     ["hatbanned"] = {5738244883}
 }
+
+local prefix = Settings["prefix"]
 local Whitelisted = Settings["whitelisted"]
 local Banned = Settings["blacklistedPlayers"]
-local PersonsAdmin = Settings["Person299's Admin"]
-local Toolbans = {}
-local cons = {}
-local vars = {}
-local connections, Loops = {}, {}
-local commandlist = {}
-local prefix = Settings["prefix"]
 local autoruncmds = Settings["autoruncmds"]
 local vars = Settings["vars"]
 local mymusiconly = Settings["mymusiconly"]
@@ -41,6 +36,13 @@ local hat = Settings["hat"]
 local alowads = Settings["alowads"]
 local antilogs = Settings["antilogs"]
 local hatbanned = Settings["hatbanned"]
+local PersonsAdmin = Settings["Person299's Admin"]
+local Toolbans = {}
+local cons = {}
+local vars = {}
+local connections, Loops = {}, {}
+local commandlist = {}
+local HttpService = game:GetService("HttpService")
 local loadtime = os.clock()
 local Stable_Check = true
 local nadoublechatkys, blehhhhhhhhh, pdiddyrapedme = false, false, false
@@ -58,6 +60,29 @@ game:GetService("RunService").RenderStepped:Connect(
         chr = owner.Character
     end
 )
+
+-- command returner
+local function fetchAndExtractCommands(url)
+    local success, scriptText = pcall(function()
+        return game:HttpGet(url)
+    end)
+
+    if not success then
+        warn("Failed to fetch script: " .. tostring(scriptText))
+        return {}
+    end
+
+    local commandlist = {}
+
+    for command in scriptText:gmatch("elseif%s+splitted%[1%]%s*==%s*prefix%s*%..%s*\"([^\"]+)\"") do
+        table.insert(commandlist, command)
+    end
+
+    return commandlist
+end
+
+local scriptURL = "https://raw.githubusercontent.com/pnhp0jE487256o2V43xc/a/refs/heads/main/dsadas.lua"
+-- end command return(er)
 
 Quotes = {
     "i completely cleared a khols admin server",
@@ -233,15 +258,9 @@ local function color(part, color)
     local thread =
         coroutine.create(
         function()
-            local Arguments = {
-                ["Part"] = part,
-                ["Color"] = getrgb(color)
-            }
-            game:GetService("Workspace")[game:GetService("Players").LocalPlayer.Name].PaintBucket:WaitForChild(
-                "Remotes"
-            ).ServerControls:InvokeServer("PaintPart", Arguments)
-        end
-    )
+            local Arguments = {["Part"] = part,["Color"] = getrgb(color)}
+            game:GetService("Workspace")[game:GetService("Players").LocalPlayer.Name].PaintBucket:WaitForChild("Remotes").ServerControls:InvokeServer("PaintPart", Arguments)
+        end)
     coroutine.resume(thread)
 end
 
@@ -312,14 +331,7 @@ local function chatshit(message)
 end
 
 local function logn(msg)
-    game.StarterGui:SetCore(
-        "SendNotification",
-        {
-            Title = "Jisatsu (v3.0.1R)",
-            Text = msg,
-            Duration = 2.5
-        }
-    )
+    game.StarterGui:SetCore("SendNotification",{Title = "Jisatsu (v3.0.1R)",Text = msg,Duration = 1.5})
 end
 
 if chatlogs then
@@ -385,10 +397,8 @@ lplayer.CharacterAdded:Connect(
             function()
                 hasSentMessage = false
                 stopAFKStatus()
-            end
-        )
-    end
-)
+            end)
+        end)
 
 local function monitorHealth(character)
     local humanoid = character:WaitForChild("Humanoid")
@@ -398,9 +408,8 @@ local function monitorHealth(character)
             if humanoid.Health == 0 then
                 chatshit("reset " .. lplayer.Name)
             end
-        end
-    )
-end
+        end)
+    end
 
 lplayer.CharacterAdded:Connect(monitorHealth)
 
@@ -419,85 +428,59 @@ chatshit(
     "h 😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹\n\n\n\n\n\n\nlocal money = math.huge\n\n\n\n\n\n\n"
 )
 
-task.delay(
-    0.4,
-    function()
-        for i, v in pairs(autoruncmds) do
-            local splitted = v:split(" ")
+task.delay(0.4, function()
+    for i, v in pairs(autoruncmds) do
+        local splitted = v:split(" ")
 
-            if splitted[1] == "nok" then
-                for i, v in pairs(workspace.Terrain._Game.Workspace.Obby:GetChildren()) do
-                    if v.CanTouch then
-                        v.CanTouch = false
+        if splitted[1] == "nok" then
+            for _, v in pairs(workspace.Terrain._Game.Workspace.Obby:GetChildren()) do
+                if v.CanTouch then
+                    v.CanTouch = false
+                end
+            end
+        elseif splitted[1] == "antikick" then
+            if not cons.antikick then
+                cons.antikick = workspace.DescendantAdded:Connect(function(part)
+                    if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
+                        part.CanCollide = false
+                        part.CanTouch = false
+                    elseif part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and part.Name == "Accessory (Chicken Triangle)" then
+                        game:GetService("RunService").RenderStepped:Wait()
+                        part:Destroy()
+                    end
+                end)
+
+                for _, part in pairs(workspace:GetDescendants()) do
+                    if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
+                        part.CanCollide = false
+                        part.CanTouch = false
+                    elseif part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and part.Name == "Accessory (Chicken Triangle)" then
+                        part:Destroy()
                     end
                 end
-            elseif splitted[1] == "antikick" then
-                if not cons.antikick then
-                    cons.antikick =
-                        workspace.DescendantAdded:Connect(
-                        function(part)
-                            if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
-                                part.CanCollide = false
-                                part.CanTouch = false
-                            elseif
-                                part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and
-                                    part.Name == "Accessory (Chicken Triangle)"
-                             then
-                                game:GetService("RunService").RenderStepped:Wait()
-                                part:Destroy()
-                            end
-                        end
-                    )
-                    for i, part in pairs(workspace:GetDescendants()) do
-                        if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
-                            part.CanCollide = false
-                            part.CanTouch = false
-                        elseif
-                            part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and
-                                part.Name == "Accessory (Chicken Triangle)"
-                         then
-                            part:Destroy()
+            end
+        elseif splitted[1] == "anticolkick" then
+            if not anticolkicking then
+                anticolkicking = true
+                connections.antikark = workspace.DescendantAdded:Connect(function(Rocket)
+                    if Rocket:IsA("BasePart") and (Rocket.Name == "Rocket" or Rocket.Name == "Addon") then
+                        Rocket.CanCollide = false
+                        Rocket.CanTouch = false
+                        for _, c in pairs(Rocket:GetChildren()) do
+                            pcall(function()
+                                c:Destroy()
+                            end)
                         end
                     end
-                end
-            elseif splitted[1] == "anticolkick" then
-                if not anticolkicking then
-                    anticolkicking = true
-                    connections.antikark =
-                        workspace.DescendantAdded:Connect(
-                        function(Rocket)
-                            if Rocket:IsA("BasePart") and (Rocket.Name == "Rocket" or Rocket.Name == "Addon") then
-                                Rocket.CanCollide = false
-                                Rocket.CanTouch = false
-                                for _, c in pairs(Rocket:GetChildren()) do
-                                    pcall(
-                                        function()
-                                            c:Destroy()
-                                        end
-                                    )
-                                end
-                            end
-                        end
-                    )
-                end
-            elseif splitted[1] == "clrlogs" then
-                for i = 1, 25 do
-                    chatshit("ff " .. Quotes[math.random(1, #Quotes)])
-                end
-                chatshit("ff Powered by jisatsu")
-                chatshit("ff discord: chaosbrew")
-                chatshit("unff all")
-                wait(0.5)
+                end)
             end
         end
-
-        logn("Start-Up Commands Loaded", 5)
     end
-)
+end)
 
 function autorunchat(cmds)
     for _, v in ipairs(cmds) do
-        chatshit(v)
+        chatshit(v .. " sigma")
     end
 end
 
@@ -714,6 +697,7 @@ local function move(part, coords)
     end
 end
 
+--[[sigma]]
 local hasRunInitialCommands = false
 
 local function runCommand(cmd)
@@ -748,7 +732,8 @@ game.Players.LocalPlayer.Chatted:Connect(
     end
 )
 
-
+--[[ COMMANDS ]]
+--
 connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
     local splitted = msg:split(" ")
         if splitted[1] ~= prefix .. "clrlogs" then
@@ -1806,13 +1791,17 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("glow all 50 30 80")
             end
         elseif splitted[1] == prefix .. "cmds" then
-            if consoleOn then
+            local commandlist = fetchAndExtractCommands(scriptURL)
+            if #commandlist > 0 then
                 print("-:COMMANDS [" .. tostring(#commandlist) .. "]:-")
-            end
-            for _, cmd in ipairs(commandlist) do
-                if cmd ~= prefix .. "clrlogs" then
+                local fileContent = ""
+                for _, cmd in ipairs(commandlist) do
                     print(cmd)
+                    fileContent = fileContent .. cmd .. "\n"
                 end
+                writefile("cmds.txt", fileContent)
+            else
+                print("No commands found.")
             end
         elseif splitted[1] == prefix .. "altcmds" then
             for _, cmd in ipairs(commandlist) do
@@ -3267,6 +3256,255 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
             logn("Velocity has been fixed!")
         elseif splitted[1] == prefix .. "playlist" then
+            --[[addcommand("!playlist2", "desc", function()
+local songIds = {      
+{14884817551, 'jugsta', 'lose yourself'},
+{14884818429, 'jugsta', 'fade away'},
+{14884821038, 'jugsta', 'when im gone'},
+{14884821394, 'jugsta', 'spacin'},
+{14884822465, 'jugsta', 'japan'},
+{14884822914, 'jugsta', 'batman'},
+{14884824647, 'jugsta', 'lies'},
+{15689441013, 'jugsta', 'rampage'},
+{15689441541, 'jugsta', 'ball'},
+{15689442404, 'jugsta', 'dejavus'},
+{15689442645, 'jugsta', 'hatin'},
+{15689442874, 'jugsta', 'ouuu'},
+{15689449215, 'jugsta', 'rockstar'},
+{15689450026, 'jugsta', 'spooky scary skeletons'},
+{15689450321, 'jugsta', 'company'},
+{15689451790, 'jugsta', 'part of me'},
+{15689453751, 'jugsta', 'rampage (sped up)'},
+{16662831606, 'jugsta', 'rampage (other version)'},
+{15689453973, 'jugsta', 'manifest'},
+{15689455568, 'jugsta', 'deja vus 2'},
+{16190758325, 'jugsta', 'cash up'},
+{16190761193, 'jugsta', 'treasury'},
+{16662830706, 'jugsta', 'raining tacos (jugcore cover)'},
+{16662827317, 'jugsta', 'runaway'},
+{17422074348, 'jugsta', 'rampage (ai version)'},
+{14884816847, 'CyPhrix', 'Overthrone'},
+{14884817162, 'CyPhrix', 'Angel Hour'},
+{14884817806, 'CyPhrix', 'Downsample'},
+{14884818123, 'CyPhrix', 'Low Crash'},
+{14884818781, 'CyPhrix', 'Ninovium'},
+{14884819243, 'CyPhrix', 'Fratricide'},
+{14884819670, 'CyPhrix', 'Wobble'},
+{14884820231, 'CyPhrix', 'Stylus'},
+{14884820670, 'CyPhrix', 'Night Voyagers'},
+{14884822175, 'CyPhrix', 'MisunderstoodLife'},
+{14884822656, 'CyPhrix', 'StartUpSequenceCPRX'},
+{14884823178, 'CyPhrix', 'Three Dimensions'},
+{14884823527, 'CyPhrix', 'Outcome'},
+{14884823796, 'CyPhrix', 'XRAY'},
+{14884821842, 'nMisaki', 'Rain'},
+{15689439126, 'nMisaki', 'Help Me'},
+{15689439895, 'nMisaki', 'New Year'},
+{15689440220, 'nMisaki', 'Stussy (sped up)'},
+{15689441943, 'nMisaki', 'All Back'},
+{15689443891, 'nMisaki', 'just dance'},
+{15689446286, 'nMisaki', 'You Won't Find'},
+{15689447739, 'nMisaki', 'In Cosmos'},
+{15689448876, 'nMisaki', 'Angel'},
+{15689450516, 'nMisaki', 'Catching A Vibe'},
+{15689454417, 'nMisaki', 'Dream Girl'},
+{15689454823, 'nMisaki', 'Stussy'},
+{15689455025, 'nMisaki', 'Only Up'},
+{15689455911, 'nMisaki', 'what about me'},
+{15689456690, 'nMisaki', 'Still Luvv'},
+{15689457918, 'nMisaki', 'Dream Girl (sped up)'},
+{16190783444, 'nMisaki', 'Dubidubidu (Techno Remix)'},
+{16190759269, 'nMisaki', 'feat. kovalenkotroon - Cupcake'},
+{16662834857, 'nMisaki', 'let me rethink everything i\'ve done'},
+{16662831303, 'nmisaki', 'so espected'},
+{16662828917, 'nMisaki, ITZTHATPLAYER', 'Just Meet Her'},
+{16662828462, 'nMisaki', 'need you so much (ultra speed up)'},
+{16662827998, 'nMisaki', 'valentines day'},
+{16662833837, 'nMisaki, zangel', 'stupidd (phonk remix)'},
+{17422075331, 'nMisaki', 'u love me too'},
+{17422115184, 'nMisaki, zangel', 'hateonme'},
+{17422126596, 'nMisaki, zangel', 'seas'},
+{17422134302, 'nMisaki', 'Evil Around Me'},
+{17422156350, 'nMisaki', 'friends'},
+{14366983305, '7SAKU7', 'SMOKI'},
+{11496564854, '7SAKU7', 'VVS'},
+{11496566119, '7SAKU7', 'CHILL'},
+{11496567470, '7SAKU7', 'old kilku miesięcy'},
+{13629053065, '7SAKU7', 'SYF'},
+{13629054031, '7SAKU7', 'Cold'},
+{14366938134, '7SAKU7', 'ZAZA'},
+{14366981014, '7SAKU7', 'PRZYJAŹŃ'},
+{14366982317, '7SAKU7', 'GTA'},
+{14366981280, '7SAKU7', 'SMOKI (Nightcore)'},
+{14366981664, '7SAKU7', 'GTA (Nightcore)'},
+{14366982638, '7SAKU7', 'ZAZA (Nightcore)'},
+{14366983007, '7SAKU7', 'PRZYJAŹŃ (Nightcore)'},
+{14884824216, '7SAKU7', 'OFFROAD'},
+{15689440774, '7SAKU7', 'TOP'},
+{15689446286, '7SAKU7', 'WHEELIE'},
+{15689447525, '7SAKU7', 'WALTER 3'},
+{16190784229, '7SAKU7', 'BAŃKA'},
+{16190780842, '7SAKU7', 'BAŃKA (Nightcore)'},
+{17422156009, '7SAKU7', 'MUZYKA'},
+{14366983688, 'DubloX', 'Diss na Hagi Łagi (Nightcore)'},
+{14366981962, 'DubloX', 'Diss na Hagi Lagi (Normal)'},
+{13629050392, 'alajsonn', 'Kitty'},
+{13629053495, 'alajsonn', 'Samoloty z Papieru'},
+{13629054638, 'Mascu', 'Feelings'},
+{11265137944, 'Sirfake', 'Slayers Hatred'},
+{11265140685, 'Sirfake', 'Untitled'},
+{11265145737, 'Sirfake', 'Blaze You'},
+{11265148479, 'Sirfake', 'Amogus'},
+{11265157079, 'Sirfake', 'Advance Slayer'},
+{11265169150, 'Sirfake', 'Fallout'},
+{11265150566, 'Juicy Gius', 'We\'ll See Again'},
+{11265152752, 'Juicy Gius', 'I Made This At Noon'},
+{11265154131, 'Juicy Gius', 'Nas - Skit'},
+{11265155652, 'Juicy Gius', 'Day Or Night'},
+{11265159494, 'Juicy Gius', 'Best Time (To My Girlfriend)'},
+{11265164947, 'Bagieta', 'Chipsy'},
+{11265166921, 'Bagieta', 'Pierniki'},
+{11265173310, 'Bagieta', 'Biszkopty'},
+{11496561844, 'FNA Ttjee', 'Fresh New Age'},
+{11496563535, 'FNA Ttjee', 'Fugaz Fogo'},
+{11496565605, 'FNA Ttjee', 'Volcano'},
+{11496569072, 'FNA Ttjee', 'Big Burning Flames'},
+{11496571729, 'FNA Ttjee', 'Fumofumo'},
+{11496573930, 'FNA Ttjee', 'Stop These Haters'},
+{11496576856, 'FNA Ttjee', 'Fume It'},
+{11496579308, 'FNA Ttjee', 'Fire Taste'},
+{11496581930, 'FNA Ttjee', 'Franz Ferdinand'},
+{11496583957, 'FNA Ttjee', 'The Night'},
+{11496586611, 'FNA Ttjee', 'Hot Summer Days'},
+{11496589677, 'FNA Ttjee', 'Lost Love'},
+{11496592780, 'FNA Ttjee', 'To The Max'},
+{14884815292, 'MajBit', 'BarbaricLand'},
+{14884815897, 'MajBit', 'Violence'},
+{14884816179, 'MajBit', 'Never Gonna Get It'},
+{14884816498, 'MajBit', 'Can\'t Believe'},
+{14884815424, 'nMisaki, Juicy Gius, MajBit', 'Autumn Of My Dreams'},
+{14884816689, 'MajBit', 'In Fire'},
+{14884816291, 'MajBit', 'Out There'},
+{14884817057, 'MajBit', 'Why This Happened'},
+{14884817245, 'MajBit', 'YodoVikings'},
+{14884817433, 'MajBit', 'PastTime'},
+{14884817622, 'MajBit', 'Naw Happenin\''},
+{14884817827, 'MajBit', 'I Do What I Can'},
+{14884818030, 'MajBit', 'I\'m A Bad Guy'},
+{14884818272, 'MajBit', 'Takin What\'s Mine'},
+{14884818493, 'MajBit', 'Don\'t Care'},
+{14884818699, 'MajBit', 'Give Up The Game'},
+{14884818864, 'MajBit', 'There For You'},
+{14884819091, 'MajBit', 'Get Off My Way'},
+{14884819252, 'MajBit', 'Bring The Heat'},
+{14884819391, 'MajBit', 'Just So Much Fun'},
+{14884819571, 'MajBit', 'Totally Not Good'},
+{14884819767, 'MajBit', 'Not My Life'},
+{14884820027, 'MajBit', 'No Free Rides'},
+{14884820224, 'MajBit', 'The Worst'},
+{14884820425, 'MajBit', 'Nefarious'},
+{14884820595, 'MajBit', 'Like A Dog'},
+{14884820768, 'MajBit', 'This Is So Bad'},
+{14884820964, 'MajBit', 'Quit Playin'},
+{14884821152, 'MajBit', 'Take My Love'},
+{14884821332, 'MajBit', 'Totally Ruined'},
+{14884821539, 'MajBit', 'Got No Life'},
+{14884821716, 'MajBit', 'This Is The Worst'},
+{14884821919, 'MajBit', 'No Fun At All'},
+{14884822095, 'MajBit', 'You Ruined Everything'},
+{14884822297, 'MajBit', 'A Bad Song'},
+{14884822482, 'MajBit', 'Totally Lame'},
+{14884822683, 'MajBit', 'Worst Day Ever'},
+{14884822887, 'MajBit', 'Nothing Good'}
+}
+
+local currentIndex = 1
+local isShuffled = false
+local isPlaying = false
+local stopRequested = false
+
+-- Shuffle the playlist
+local function shufflePlaylist()
+for i = #songIds, 2, -1 do
+local j = math.random(i)
+songIds[i], songIds[j] = songIds[j], songIds[i]
+end
+end
+
+-- Play the current song
+local function playCurrentSong()
+if not stopRequested then
+local song = songIds[currentIndex]
+local songId, creator, title = song[1], song[2], song[3]
+play(songId)
+say('Now playing: ' .. creator .. ' - ' .. title .. ' (' .. currentIndex .. '/' .. #songIds .. ')')
+end
+end
+
+-- Stop playing
+local function stopPlaying()
+stop()
+isPlaying = false
+stopRequested = false
+end
+
+-- Go to the next song
+local function nextSong()
+currentIndex = currentIndex + 1
+if currentIndex > #songIds then
+currentIndex = 1
+end
+playCurrentSong()
+end
+
+-- Shuffle command
+addcommand("!shuffle", "desc", function()
+if not isShuffled then
+shufflePlaylist()
+isShuffled = true
+say('Playlist shuffled.')
+else
+say('Playlist is already shuffled.')
+end
+end)
+
+-- Stop command
+addcommand("!stop", "desc", function()
+if isPlaying then
+stopRequested = true
+stopPlaying()
+say('Playback stopped.')
+else
+say('No song is currently playing.')
+end
+end)
+
+-- Play command
+addcommand("!play", "desc", function()
+if not isPlaying then
+isPlaying = true
+playCurrentSong()
+else
+say('A song is already playing.')
+end
+end)
+
+-- Next song command
+addcommand("!next", "desc", function()
+if isPlaying then
+nextSong()
+say('Playing next song.')
+else
+say('No song is currently playing.')
+end
+end)
+
+-- Initial shuffle and play
+shufflePlaylist()
+isShuffled = true
+isPlaying = true
+playCurrentSong()
+end)]]
             game.Players.LocalPlayer.Chatted:Connect(
                 function(msg)
                     if msg == "delaudio" then
@@ -3641,9 +3879,11 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             playNextSong()
             print(songIds)
 
-
+            --[[ Error Handling for Playlist]]
+            --
             if not game:GetService("ReplicatedStorage"):FindFirstChild("Xeno") then
                 warn("Xeno module not found in ReplicatedStorage.")
+            end
         elseif splitted[1] == prefix .. "stonemap" then
             local player = game.Players.LocalPlayer
             chatshit("gear me 59190534")
@@ -4673,7 +4913,57 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                         end
                     )()
                 end
-            end
+            end -------------------------------------------------------------------- BASIC API STUFF HERE --------------------------------------------------------------------
+            --
+
+            --[[
+
+fixed library lol
+
+task.spawn(function()
+colorAPI.colorObbyBox(colorAPI.transformToColor3(BrickColor.new("Teal")))
+end)
+
+task.spawn(function()
+colorAPI.colorObbyBricks(colorAPI.transformToColor3(BrickColor.new("Really red")))
+end)
+
+task.spawn(function()
+colorAPI.colorAdminDivs(colorAPI.transformToColor3(BrickColor.new("Dark stone grey")))
+end)
+
+task.spawn(function()
+colorAPI.colorPads(colorAPI.transformToColor3(BrickColor.new("Bright green")))
+end)
+
+task.spawn(function()
+colorAPI.colorBuildingBricks({
+DarkStoneGrey = colorAPI.transformToColor3(BrickColor.new("Dark stone grey")),
+DeepBlue = colorAPI.transformToColor3(BrickColor.new("Deep blue")),
+NY = colorAPI.transformToColor3(BrickColor.new("New Yeller")),
+IW = colorAPI.transformToColor3(BrickColor.new("Institutional white")),
+LimeGreen = colorAPI.transformToColor3(BrickColor.new("Lime green")),
+MSG = colorAPI.transformToColor3(BrickColor.new("Medium Stone grey")),
+RB = colorAPI.transformToColor3(BrickColor.new("Really black")),
+TP = colorAPI.transformToColor3(BrickColor.new("Toothpaste")),
+RR = colorAPI.transformToColor3(BrickColor.new("Really red"))
+})
+end)
+
+task.spawn(function()
+colorAPI.colorHouse({
+wallsC = colorAPI.transformToColor3(BrickColor.new("Brick yellow")),
+baseC = colorAPI.transformToColor3(BrickColor.new("Bright green")),
+roofC = colorAPI.transformToColor3(BrickColor.new("Bright red")),
+WANDDC = colorAPI.transformToColor3(BrickColor.new("Dark orange")),
+stairsC = colorAPI.transformToColor3(BrickColor.new("Dark stone grey")),
+floorC = colorAPI.transformToColor3(BrickColor.new("Medium blue")),
+rooftsC = colorAPI.transformToColor3(BrickColor.new("Reddish brown")),
+chiC = colorAPI.transformToColor3(BrickColor.new("Sand red"))
+})
+end)
+
+]]
             game:GetService("Players"):Chat("gear me 00000000000000000018474459")
             local Backpack = game.Players.LocalPlayer:FindFirstChildOfClass("Backpack")
             game.Players.LocalPlayer.Backpack:WaitForChild("PaintBucket")
@@ -4932,6 +5222,40 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("This command does not work without Person's Admin.")
             end
+        elseif splitted[1] == prefix .. "adminprotect" then
+            Loops.adminprotect = true
+            spawn(
+                function()
+                    repeat
+                        game:GetService("RunService").RenderStepped:Wait()
+                        local PadNames = {}
+                        for i, v in pairs(game:GetService("Workspace").Terrain["_Game"].Admin.Pads:GetChildren()) do
+                            if table.find(PadNames, v.Name) then
+                                fireclickdetector(
+                                    game:GetService("Workspace").Terrain["_Game"].Admin.Regen.ClickDetector
+                                )
+                                spawn(
+                                    function()
+                                        wait(0.3)
+                                        chatshit(
+                                            "h/\n\n\n<Jisatsu.lua> ",
+                                            "Please only grab a singular admin pad, " ..
+                                                game.Players[v.Name:split("'s")[1]].DisplayName .. ".\n\n\n"
+                                        )
+                                    end
+                                )
+                            else
+                                if v.Name ~= "Touch to get admin" then
+                                    table.insert(PadNames, v.Name)
+                                end
+                            end
+                        end
+                    until not Loops.adminprotect
+                end
+            )
+            logn("Admin protect enabled.")
+        elseif splitted[1] == prefix .. "unadminprotect" then
+            Loops.adminprotect = false
         elseif splitted[1] == prefix .. "pads" then
             logn("Teleported to pads!")
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
@@ -4983,3 +5307,27 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 task.wait(1.5)
             end
         end
+    end
+)
+
+wait(5)
+if not _G.IY_LOADED then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+else
+    logn("Infinite Yield is already loaded.")
+end
+
+--[[ C SYSTEM FUNCTION ]]
+--
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function monitorPlayerChat(player)
+    player.Chatted:Connect(
+        function(msg)
+            if msg == "/c system" and player ~= LocalPlayer then
+                chatshit("h/ \n\n\n" .. player.Name .. " is using /c system lol\n\n\n")
+            end
+        end
+    )
+end
