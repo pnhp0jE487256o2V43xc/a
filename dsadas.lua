@@ -1,4 +1,6 @@
-repeat wait() until game:IsLoaded()
+repeat
+    wait()
+until game:IsLoaded()
 
 if game.PlaceId ~= 112420803 and game.PlaceId ~= 115670532 then
     return
@@ -10,24 +12,57 @@ end
 getgenv().JISATSU = true
 
 local Settings = {
-    ["prefix"] = "<", -- Prefix used for running commands
-    ["whitelisted"] = {}, -- People whitelisted by default
-    ["blacklistedPlayers"] = {"Instlgator","blue20043","Arman2oooo","aonhayhoinon011","KsiPrimeUwu","BarfinOnTheHomeless","immutate","Famouson4chan","ospedaIe","FAMUSPURPLE","Muffins4evar","an1emono"}, -- People banned by default
-    ["autoruncmds"] = {"nok", "antikick", "anticolkick"}, -- Commands to run automatically
-    ["vars"] = {purgemethod = "rocket"}, -- Rocketkick
-    ["mymusiconly"] = true,
-    ["mymusiconly_ID"] = 9046863579,
-    ["hidegears"] = "00000000000000000000000000000000000000000000",
-    ["hat"] = "18219890448",
-    ["alowads"] = true,
-    ["antilogs"] = true,
-    ["hatbanned"] = {5738244883}
+    ["Script Name"] = "Jisatsu", -- The name of the script (can be changed)
+    ["prefix"] = "<", -- Prefix used for running commands (e.g., "<command")
+    ["Welcome Message"] = "Successfully Loaded.", -- Message shown when the script is successfully loaded
+
+    ["Person299's Admin"] = true, -- Whether Person299 is bought or not, Some commands are specific.
+    ["alowads"] = true, -- Whether to allow ads to run (likely related to user or script interaction)
+    ["antilogs"] = true, -- Enables protection to prevent the use of logging commands
+    ["mymusiconly"] = true, -- Whether only your music is allowed to play
+    ["vars"] = {purgemethod = "rocket"}, -- The method used for kicking people (e.g., rocketkick)
+    ["Custom Color"] = Color3.new(0.3, 0, 0.5), -- Custom color for the platform or other UI elements, nil disables custom color
+    ["mymusiconly_ID"] = 9046863579, -- ID of the music that is allowed to play if `mymusiconly` is enabled
+    ["hidegears"] = "00000000000000000000000000000000000000000000", -- Prevents gear codes from being seen in the "logs" command (protects gear from being stolen)
+    ["hat"] = "18219890448", -- ID of the hat to be equipped on the player for hatkick (if applicable)
+    ["Default Whitelisted"] = {}, -- List of people whitelisted by default (can bypass bans or restrictions)
+    ["Default Banned"] = {"Instlgator","blue20043","Arman2oooo","aonhayhoinon011","KsiPrimeUwu","BarfinOnTheHomeless","immutate","Famouson4chan","ospedaIe","an1emono"}, -- List of people banned by default (cannot access script or server)
+    ["hatbanned"] = {5738244883}, -- List of hat IDs that are banned from being worn
+    ["Autorun Commands"] = {"nok", "antikick", "anticolkick"}, -- Commands to run automatically when the script is loaded
+    ["Legacy Serverlock"] = true, -- Softlocks players instead of crashing
+    ["Punish Based Softlock"] = true, -- Uses punishing for softlocking instead of sizing and sending to heaven info
+
+    ["Auto Crasher"] = { -- Automatically serverhop and crash servers
+        ["Enabled"] = false,
+        ["Message"] = "Running autocrasher", -- Message to send upon before crashing, set to nil if no message
+        ["Serverhop Time"] = 10, -- Serverhops after specified amount of time
+        ["Skip Crashed Servers"] = false, -- Uses savehop instead of serverhop
+        ["Timeout"] = 10, -- Gives up on joining a server after a specified amount of time
+        ["Commands"] = {"music 17422147220"}, -- Commands to run on join
+        ["Command Delay"] = -1, -- Delay between commands, -1 is none
+        ["Ignore Autorun Commands"] = true, -- Skips the autorun commands
+        ["Time Before Crash"] = .5, -- Time before crashing server, -1 is instant
+        ["Crash"] = false, -- If true, it will crash
+        ["Vampire"] = false, -- Use Vampire Vanquisher to crash the servers
+        ["Whitelisted Players"] = {"ripcxo", "4jayAltXx", "whatveudone", "whatveidone"}, -- Do not crash servers with these players in it
+        ["Targetted Players"] = { -- Automatically attempts to join players and crash their server
+            ["Enabled"] = false,
+            ["Use Join Player"] = false, -- Uses the joinplayer command, which is very unstable
+            ["Ignore Whitelisted"] = true, -- Crashes even if a whitelisted player is in the server
+            ["Players"] = {} -- Players that get targetted
+        }
+    },
+    ["Player Autorun Commands"] = { -- Automatically runs commands when these players are detected
+        ["itspavvv"] = "characteradded itspavvv runcommand hat itspavvv 17401056338",
+        ["iiuxurryy"] = "characteradded iiuxurryy runcommand hat iiuxurryy 17401056338"
+    }
 }
 
-local prefix = Settings["prefix"]
-local Whitelisted = Settings["whitelisted"]
-local Banned = Settings["blacklistedPlayers"]
-local autoruncmds = Settings["autoruncmds"]
+local ScriptName = Settings["Script Name"]
+local prefix = Settings["Prefix"]
+local Whitelisted = Settings["Default Whitelisted"]
+local Banned = Settings["Default Banned"]
+local autoruncmds = Settings["Autorun Commands"]
 local vars = Settings["vars"]
 local mymusiconly = Settings["mymusiconly"]
 local mymusiconly_ID = Settings["mymusiconly_ID"]
@@ -37,6 +72,9 @@ local alowads = Settings["alowads"]
 local antilogs = Settings["antilogs"]
 local hatbanned = Settings["hatbanned"]
 local PersonsAdmin = Settings["Person299's Admin"]
+local CustomColor = Settings["Custom Color"]
+local OldServerLock = Settings["Legacy Serverlock"]
+local PunishSoftlock = Settings["Punish Based Softlock"]
 local Toolbans = {}
 local cons = {}
 local vars = {}
@@ -61,27 +99,374 @@ game:GetService("RunService").RenderStepped:Connect(
     end
 )
 
--- command returner
-local function fetchAndExtractCommands(url)
-    local success, scriptText = pcall(function()
-        return game:HttpGet(url)
+local function PlayerAdded(Player)
+    spawn(function()
+        repeat wait() until Player and Player.Name
+        if table.find(Whitelisted,Player.Name) then
+        end
+	
+	if table.find(PlayerCrash,Player.Name) and not Settings["Auto Crasher"]["Enabled"] then -- Automatically crashes if in server
+		GUI:SendMessageNoBrackets("\n\n\n\n["..ScriptName.."]", "\n\n\n\nAuto crash player ("..Player.DisplayName..") found, crashing server.")
+		task.wait(0.333)
+		if PlayerCrashMode == true then
+			runCommand(prefix.."vampirecrash",{})
+		else
+			runCommand(prefix.."shutdown",{})
+		end
+	end
+	
+	if Settings["Player Autorun Commands"][Player.Name] and not (Settings["Auto Crasher"]["Enabled"] and Settings["Auto Crasher"]["Ignore Autorun Commands"]) then
+		local v = Settings["Player Autorun Commands"][Player.Name]
+		local fixer = {}
+		if #v > 1 then
+			for i=2,#v:split(" ") do
+				table.insert(fixer,v:split(" ")[i])
+			end
+		end
+		
+		print("player "..Player.Name.." is in server, autorunning command: "..prefix..v)
+		runCommand(prefix..v:split(" ")[1],fixer)
+	end
+        
+        if ServerLocked and not table.find(Whitelisted,Player.Name) and not table.find(ServerLockedProtection,Player.Name) then
+                if ServerLockedSoundEnabled then
+                    spawn(function()
+                        logn(ScriptName, "This server is currently locked.")
+                    end)
+                    wait(0.1)
+                    repeat wait() until Player and Player.Character
+                    wait(0.25)
+			if OldServerLock then
+				spawn(function()
+					game.Players:Chat("music "..tostring(ServerLockedSound))
+					wait(10)
+					game.Players:Chat("music nan")
+				end)
+				runCommand(prefix.."softlock",{Player.Name})
+			else
+                    		runCommand(prefix.."rocketcrashsound",{Player.Name,ServerLockedSound})
+			end
+                else
+                    spawn(function()
+                        GUI:SendMessage(ScriptName, "This server is currently locked.")
+                    end)
+                    wait(0.1)
+                    repeat wait() until Player and Player.Character
+                    wait(0.25)
+			if OldServerLock then
+				runCommand(prefix.."softlock",{Player.Name})
+			else
+                    		runCommand(prefix.."rocketcrash",{Player.Name})
+			end
+                end
+            end
     end)
-
-    if not success then
-        warn("Failed to fetch script: " .. tostring(scriptText))
-        return {}
-    end
-
-    local commandlist = {}
-
-    for command in scriptText:gmatch("elseif%s+splitted%[1%]%s*==%s*prefix%s*%..%s*\"([^\"]+)\"") do
-        table.insert(commandlist, command)
-    end
-
-    return commandlist
 end
 
-local scriptURL = "https://raw.githubusercontent.com/pnhp0jE487256o2V43xc/a/refs/heads/main/dsadas.lua"
+task.spawn(
+    function()
+        if Settings["Auto Crasher"]["Enabled"] then
+            task.wait(Settings["Auto Crasher"]["Timeout"])
+            if not game:IsLoaded() then
+                if Settings["Auto Crasher"]["Skip Crashed Servers"] then
+                    function GetOldServers()
+                        if isfile("PreviousServers.txt") then
+                            return readfile("PreviousServers.txt"):split(";")
+                        else
+                            return {}
+                        end
+                    end
+
+                    function WriteOldServers(Data)
+                        if isfile("PreviousServers.txt") then
+                            appendfile("PreviousServers.txt", ";" .. Data)
+                        else
+                            writefile("PreviousServers.txt", Data)
+                        end
+                    end
+
+                    function Savehop()
+                        local OldServers = GetOldServers()
+                        local Servers = {}
+                        for i, v in pairs(
+                            game:GetService("HttpService"):JSONDecode(
+                                game:HttpGet(
+                                    "https://games.roblox.com/v1/games/" ..
+                                        game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+                                )
+                            ).data
+                        ) do
+                            if
+                                type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId and
+                                    not table.find(OldServers, game.JobId)
+                             then
+                                table.insert(Servers, v.id)
+                            end
+                        end
+
+                        if not table.find(OldServers, game.JobId) then
+                            WriteOldServers(game.JobId)
+                        end
+                        if #Servers ~= 0 then
+                            game:GetService("TeleportService"):TeleportToPlaceInstance(
+                                game.PlaceId,
+                                Servers[math.random(1, #Servers)]
+                            )
+                        else
+                            print("No servers found, retrying in 10 seconds")
+                            spawn(
+                                function()
+                                    wait(10)
+                                    Savehop()
+                                end
+                            )
+                        end
+                    end
+
+                    Savehop()
+                    game:GetService("TeleportService").TeleportInitFailed:Connect(Savehop)
+                else
+                    function Serverhop()
+                        local Servers = {}
+                        for i, v in pairs(
+                            game:GetService("HttpService"):JSONDecode(
+                                game:HttpGet(
+                                    "https://games.roblox.com/v1/games/" ..
+                                        game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+                                )
+                            ).data
+                        ) do
+                            if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+                                table.insert(Servers, v.id)
+                            end
+                        end
+
+                        if #Servers ~= 0 then
+                            game:GetService("TeleportService"):TeleportToPlaceInstance(
+                                game.PlaceId,
+                                Servers[math.random(1, #Servers)]
+                            )
+                        else
+                            game:GetService("TeleportService"):Teleport(game.PlaceId)
+                        end
+                    end
+
+                    Serverhop()
+                    game:GetService("TeleportService").TeleportInitFailed:Connect(Serverhop)
+                end
+            end
+        end
+    end
+)
+
+task.spawn(
+    function()
+        if Settings["Auto Crasher"]["Enabled"] then
+            local WhitelistedFound = false
+            if
+                not (Settings["Auto Crasher"]["Targetted Players"]["Enabled"] and
+                    Settings["Auto Crasher"]["Targetted Players"]["Ignore Whitelisted"])
+             then
+                print("Ignore whitelisted is OFF")
+                for i, v in pairs(game.Players:GetPlayers()) do
+                    if table.find(Settings["Auto Crasher"]["Whitelisted Players"], v.Name) then
+                        WhitelistedFound = true
+                        GUI:SendMessage(
+                            ScriptName,
+                            "Whitelisted player (" .. v.DisplayName .. ") found, skipping server."
+                        )
+                    end
+                end
+            end
+            if not WhitelistedFound then
+                if Settings["Auto Crasher"]["Targetted Players"]["Enabled"] then
+                    print("ok les go")
+                    local TargettedFound = false
+                    for i, v in pairs(game.Players:GetPlayers()) do
+                        if table.find(Settings["Auto Crasher"]["Targetted Players"]["Players"], v.Name) then
+                            TargettedFound = true
+                        end
+                    end
+                    if not TargettedFound then
+                        GUI:SendMessage(ScriptName, "Targetted players not found, skipping server.")
+                    else
+                        if Settings["Auto Crasher"]["Message"] then
+                            GUI:SendMessage(ScriptName, Settings["Auto Crasher"]["Message"])
+                        end
+                        for i, v in pairs(Settings["Auto Crasher"]["Commands"]) do
+                            chatshit(v)
+                            if Settings["Auto Crasher"]["Command Delay"] ~= -1 then
+                                wait(Settings["Auto Crasher"]["Command Delay"])
+                            end
+                        end
+                        if Settings["Auto Crasher"]["Time Before Crash"] ~= -1 then
+                            wait(Settings["Auto Crasher"]["Time Before Crash"])
+                        end
+                        if Settings["Auto Crasher"]["Crash"] then
+                            if Settings["Auto Crasher"]["Vampire"] then
+                                runCommand(prefix .. "vgc", {})
+                            else
+                                runCommand(prefix .. "silc", {})
+                            end
+                        end
+                    end
+                else
+                    print("ok les no")
+                    if Settings["Auto Crasher"]["Message"] then
+                        GUI:SendMessage(ScriptName, Settings["Auto Crasher"]["Message"])
+                    end
+                    for i, v in pairs(Settings["Auto Crasher"]["Commands"]) do
+                        chatshit(v)
+                        if Settings["Auto Crasher"]["Command Delay"] ~= -1 then
+                            wait(Settings["Auto Crasher"]["Command Delay"])
+                        end
+                    end
+                    if Settings["Auto Crasher"]["Time Before Crash"] ~= -1 then
+                        wait(Settings["Auto Crasher"]["Time Before Crash"])
+                    end
+                    if Settings["Auto Crasher"]["Crash"] then
+                        if Settings["Auto Crasher"]["Vampire"] then
+                            runCommand(prefix .. "vgc", {})
+                        else
+                            runCommand(prefix .. "silc", {})
+                        end
+                    end
+                end
+            end
+            while true do
+                wait(Settings["Auto Crasher"]["Serverhop Time"])
+                if
+                    Settings["Auto Crasher"]["Targetted Players"]["Enabled"] and
+                        Settings["Auto Crasher"]["Targetted Players"]["Use Join Player"]
+                 then
+                    runCommand(
+                        prefix .. "joinplayer",
+                        {
+                            Settings["Auto Crasher"]["Targetted Players"]["Players"][
+                                math.random(1, #Settings["Auto Crasher"]["Targetted Players"]["Players"])
+                            ],
+                            "silent"
+                        }
+                    )
+                else
+                    if Settings["Auto Crasher"]["Skip Crashed Servers"] then
+                        runCommand(prefix .. "savehop", {})
+                    else
+                        runCommand(prefix .. "serverhop", {})
+                    end
+                end
+            end
+        end
+    end
+)
+
+local fileName = "Banned.txt"
+
+local function Remind(msg)
+    game.StarterGui:SetCore(
+        "SendNotification",
+        {
+            Title = "Jisatsu.",
+            Text = msg,
+            Duration = 2
+        }
+    )
+end
+
+local function loadBannedPlayers()
+    if
+        pcall(
+            function()
+                readfile(fileName)
+            end
+        )
+     then
+        local content = readfile(fileName)
+        for line in content:gmatch("[^\r\n]+") do
+            table.insert(Banned, line)
+        end
+    end
+end
+
+local function saveBannedPlayers()
+    local content = ""
+    for _, name in ipairs(Banned) do
+        content = content .. name .. "\n"
+    end
+    writefile(fileName, content)
+end
+
+loadBannedPlayers()
+
+game.Players.LocalPlayer.Chatted:Connect(
+    function(msg)
+        if string.sub(msg, 1, 4) == "/hban2" then
+            local playerz = string.sub(msg, 6)
+            local Player = GetPlayers(playerz)
+            for i, v in pairs(Player) do
+                if not table.find(Banned, v.Name) then
+                    table.insert(Banned, v.Name)
+                    appendfile(fileName, v.Name .. "\n")
+                    chatshit("/hban " .. v.Name)
+                    Remind("Banned " .. v.Name)
+                else
+                    Remind("Player:" .. v.Name .. " is Banned already")
+                end
+            end
+        end
+    end
+)
+
+game.Players.LocalPlayer.Chatted:Connect(
+    function(msg)
+        if string.sub(msg, 1, 7) == "/unhban2" then
+            local playerz = string.sub(msg, 9)
+            local Player = GetPlayers(playerz)
+            for i, v in pairs(Player) do
+                if table.find(Banned, v.Name) then
+                    table.remove(Banned, v.Name)
+                    Remind("Unbanned " .. v.Name)
+                    saveBannedPlayers()
+                else
+                    Remind("Player:" .. v.Name .. " isnt Banned")
+                end
+            end
+        end
+    end
+)
+
+local function onPlayerAdded(player)
+    if table.find(Banned, player.Name) then
+        chatshit("/hban " .. player.Name)
+    end
+end
+
+game.Players.PlayerAdded:Connect(onPlayerAdded)
+
+for _, player in ipairs(game.Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+function checkGamepass(Target, ID)
+    local data =
+        game:GetService("HttpService"):JSONDecode(
+        game:HttpGetAsync("https://inventory.roblox.com/v1/users/" .. Target.UserId .. "/items/GamePass/" .. ID)
+    ).data
+
+    if data then
+        if #data > 0 then
+            return "200"
+        else
+            return "403"
+        end
+    else
+        print("Request to " .. Target.Name .. " for " .. ID .. " failed")
+        return "404"
+    end
+end
+
+-- command returner
+
 -- end command return(er)
 
 Quotes = {
@@ -258,9 +643,12 @@ local function color(part, color)
     local thread =
         coroutine.create(
         function()
-            local Arguments = {["Part"] = part,["Color"] = getrgb(color)}
-            game:GetService("Workspace")[game:GetService("Players").LocalPlayer.Name].PaintBucket:WaitForChild("Remotes").ServerControls:InvokeServer("PaintPart", Arguments)
-        end)
+            local Arguments = {["Part"] = part, ["Color"] = getrgb(color)}
+            game:GetService("Workspace")[game:GetService("Players").LocalPlayer.Name].PaintBucket:WaitForChild(
+                "Remotes"
+            ).ServerControls:InvokeServer("PaintPart", Arguments)
+        end
+    )
     coroutine.resume(thread)
 end
 
@@ -331,7 +719,7 @@ local function chatshit(message)
 end
 
 local function logn(msg)
-    game.StarterGui:SetCore("SendNotification",{Title = "Jisatsu (v3.0.1R)",Text = msg,Duration = 1.5})
+    game.StarterGui:SetCore("SendNotification", {Title = "Jisatsu (v3.0.1R)", Text = msg, Duration = 1.5})
 end
 
 if chatlogs then
@@ -397,8 +785,10 @@ lplayer.CharacterAdded:Connect(
             function()
                 hasSentMessage = false
                 stopAFKStatus()
-            end)
-        end)
+            end
+        )
+    end
+)
 
 local function monitorHealth(character)
     local humanoid = character:WaitForChild("Humanoid")
@@ -408,8 +798,9 @@ local function monitorHealth(character)
             if humanoid.Health == 0 then
                 chatshit("reset " .. lplayer.Name)
             end
-        end)
-    end
+        end
+    )
+end
 
 lplayer.CharacterAdded:Connect(monitorHealth)
 
@@ -428,55 +819,72 @@ chatshit(
     "h 😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹\n\n\n\n\n\n\nlocal money = math.huge\n\n\n\n\n\n\n"
 )
 
-task.delay(0.4, function()
-    for i, v in pairs(autoruncmds) do
-        local splitted = v:split(" ")
+task.delay(
+    0.4,
+    function()
+        for i, v in pairs(autoruncmds) do
+            local splitted = v:split(" ")
 
-        if splitted[1] == "nok" then
-            for _, v in pairs(workspace.Terrain._Game.Workspace.Obby:GetChildren()) do
-                if v.CanTouch then
-                    v.CanTouch = false
-                end
-            end
-        elseif splitted[1] == "antikick" then
-            if not cons.antikick then
-                cons.antikick = workspace.DescendantAdded:Connect(function(part)
-                    if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
-                        part.CanCollide = false
-                        part.CanTouch = false
-                    elseif part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and part.Name == "Accessory (Chicken Triangle)" then
-                        game:GetService("RunService").RenderStepped:Wait()
-                        part:Destroy()
-                    end
-                end)
-
-                for _, part in pairs(workspace:GetDescendants()) do
-                    if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
-                        part.CanCollide = false
-                        part.CanTouch = false
-                    elseif part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and part.Name == "Accessory (Chicken Triangle)" then
-                        part:Destroy()
+            if splitted[1] == "nok" then
+                for _, v in pairs(workspace.Terrain._Game.Workspace.Obby:GetChildren()) do
+                    if v.CanTouch then
+                        v.CanTouch = false
                     end
                 end
-            end
-        elseif splitted[1] == "anticolkick" then
-            if not anticolkicking then
-                anticolkicking = true
-                connections.antikark = workspace.DescendantAdded:Connect(function(Rocket)
-                    if Rocket:IsA("BasePart") and (Rocket.Name == "Rocket" or Rocket.Name == "Addon") then
-                        Rocket.CanCollide = false
-                        Rocket.CanTouch = false
-                        for _, c in pairs(Rocket:GetChildren()) do
-                            pcall(function()
-                                c:Destroy()
-                            end)
+            elseif splitted[1] == "antikick" then
+                if not cons.antikick then
+                    cons.antikick =
+                        workspace.DescendantAdded:Connect(
+                        function(part)
+                            if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
+                                part.CanCollide = false
+                                part.CanTouch = false
+                            elseif
+                                part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and
+                                    part.Name == "Accessory (Chicken Triangle)"
+                             then
+                                game:GetService("RunService").RenderStepped:Wait()
+                                part:Destroy()
+                            end
+                        end
+                    )
+
+                    for _, part in pairs(workspace:GetDescendants()) do
+                        if part.Name == "Rocket" or part.Name == "Addon" and part:IsA("BasePart") then
+                            part.CanCollide = false
+                            part.CanTouch = false
+                        elseif
+                            part:IsA("Accessory") and tostring(part.AccessoryType) == "Enum.AccessoryType.Back" and
+                                part.Name == "Accessory (Chicken Triangle)"
+                         then
+                            part:Destroy()
                         end
                     end
-                end)
+                end
+            elseif splitted[1] == "anticolkick" then
+                if not anticolkicking then
+                    anticolkicking = true
+                    connections.antikark =
+                        workspace.DescendantAdded:Connect(
+                        function(Rocket)
+                            if Rocket:IsA("BasePart") and (Rocket.Name == "Rocket" or Rocket.Name == "Addon") then
+                                Rocket.CanCollide = false
+                                Rocket.CanTouch = false
+                                for _, c in pairs(Rocket:GetChildren()) do
+                                    pcall(
+                                        function()
+                                            c:Destroy()
+                                        end
+                                    )
+                                end
+                            end
+                        end
+                    )
+                end
             end
         end
     end
-end)
+)
 
 function autorunchat(cmds)
     for _, v in ipairs(cmds) do
@@ -615,80 +1023,103 @@ local function fixmover()
         end
     end
     workspace.Gravity = 196.2
-    game.Players:Chat("respawn me fuck")
+    chatshit("respawn me fuck")
     game.Players.LocalPlayer.CharacterAdded:Wait()
 end
 
 local function move(part, coords)
-    local s, e = pcall(function()
-        if vars.ivorymoving then
-            repeat task.wait() until not vars.ivorymoving
-        end
-        vars.ivorymoving = true
-
-        local originalCollisionStates = {}
-        for i, v in game.Workspace:GetDescendants() do
-            if v:IsA("BasePart") then
-                originalCollisionStates[v] = v.CanCollide
-                v.CanCollide = false
+    local s, e =
+        pcall(
+        function()
+            if vars.ivorymoving then
+                repeat
+                    task.wait()
+                until not vars.ivorymoving
             end
-        end
+            vars.ivorymoving = true
 
-        game.Players:Chat("gear me 108158379")
-        repeat task.wait() until game.Players.LocalPlayer.Backpack:FindFirstChild("IvoryPeriastron")
-        repeat task.wait() until game.Players.LocalPlayer.Backpack:FindFirstChild("IvoryPeriastron"):FindFirstChild("Remote")
-        game.Players.LocalPlayer.Backpack:FindFirstChild("IvoryPeriastron").Parent = game.Players.LocalPlayer.Character
-        game.Players:Chat("size me .4")
-        repeat task.wait() until game.Players.LocalPlayer.Character.HumanoidRootPart.Size == Vector3.new(0.800000011920929, 0.800000011920929, 0.4000000059604645)
+            local originalCollisionStates = {}
+            for i, v in game.Workspace:GetDescendants() do
+                if v:IsA("BasePart") then
+                    originalCollisionStates[v] = v.CanCollide
+                    v.CanCollide = false
+                end
+            end
 
-        workspace.Gravity = 0
-        game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
-        workspace.FallenPartsDestroyHeight = 0 / 0
-
-        coroutine.wrap(function()
+            chatshit("gear me 108158379")
             repeat
-                game:GetService("RunService").Heartbeat:wait()
-                game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
-                game.Players.LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
-            until not vars.ivorymoving
-        end)()
+                task.wait()
+            until game.Players.LocalPlayer.Backpack:FindFirstChild("IvoryPeriastron")
+            repeat
+                task.wait()
+            until game.Players.LocalPlayer.Backpack:FindFirstChild("IvoryPeriastron"):FindFirstChild("Remote")
+            game.Players.LocalPlayer.Backpack:FindFirstChild("IvoryPeriastron").Parent =
+                game.Players.LocalPlayer.Character
+            chatshit("size me .4")
+            repeat
+                task.wait()
+            until game.Players.LocalPlayer.Character.HumanoidRootPart.Size ==
+                Vector3.new(0.800000011920929, 0.800000011920929, 0.4000000059604645)
 
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = coords * CFrame.new(-1 * (part.Size.X / 2) - (game.Players.LocalPlayer.Character["Torso"].Size.X / 2), 0, 0)
-        task.wait(0.3)
-        game.Players.LocalPlayer.Character.IvoryPeriastron.Remote:FireServer(Enum.KeyCode.E)
-        repeat task.wait() until workspace.Camera:FindFirstChild("FakeCharacter")
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = part.CFrame * CFrame.new(-1 * (part.Size.X / 2) - (game.Players.LocalPlayer.Character["Torso"].Size.X / 2), 0, 0)
-        task.wait(0.3)
-        repeat
-            game.Players:Chat("unpunish me me me fuck")
-            task.wait()
-        until game.Players.LocalPlayer.Character.Torso:FindFirstChild("Weld")
+            workspace.Gravity = 0
+            game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+            workspace.FallenPartsDestroyHeight = 0 / 0
 
-        for i, v in workspace:GetChildren() do
-            if v.Name == "Pulse" then
-                v:Destroy()
+            coroutine.wrap(
+                function()
+                    repeat
+                        game:GetService("RunService").Heartbeat:wait()
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+                    until not vars.ivorymoving
+                end
+            )()
+
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                coords *
+                CFrame.new(-1 * (part.Size.X / 2) - (game.Players.LocalPlayer.Character["Torso"].Size.X / 2), 0, 0)
+            task.wait(0.3)
+            game.Players.LocalPlayer.Character.IvoryPeriastron.Remote:FireServer(Enum.KeyCode.E)
+            repeat
+                task.wait()
+            until workspace.Camera:FindFirstChild("FakeCharacter")
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                part.CFrame *
+                CFrame.new(-1 * (part.Size.X / 2) - (game.Players.LocalPlayer.Character["Torso"].Size.X / 2), 0, 0)
+            task.wait(0.3)
+            repeat
+                chatshit("unpunish me me me fuck")
+                task.wait()
+            until game.Players.LocalPlayer.Character.Torso:FindFirstChild("Weld")
+
+            for i, v in workspace:GetChildren() do
+                if v.Name == "Pulse" then
+                    v:Destroy()
+                end
             end
-        end
 
-        game.Players.LocalPlayer.Character.IvoryPeriastron.Remote:FireServer(Enum.KeyCode.E)
-        repeat task.wait() until workspace:FindFirstChild("Pulse")
-        for i, v in workspace:GetChildren() do
-            if v.Name == "Pulse" then
-                v:Destroy()
+            game.Players.LocalPlayer.Character.IvoryPeriastron.Remote:FireServer(Enum.KeyCode.E)
+            repeat
+                task.wait()
+            until workspace:FindFirstChild("Pulse")
+            for i, v in workspace:GetChildren() do
+                if v.Name == "Pulse" then
+                    v:Destroy()
+                end
             end
-        end
 
-        for v, state in pairs(originalCollisionStates) do
-            if v:IsA("BasePart") and v.Parent then  
-                v.CanCollide = state
+            for v, state in pairs(originalCollisionStates) do
+                if v:IsA("BasePart") and v.Parent then
+                    v.CanCollide = state
+                end
             end
-        end
 
-        workspace.Gravity = 196.2
-        game.Players:Chat("respawn me fuck")
-        game.Players.LocalPlayer.CharacterAdded:Wait()
-        vars.ivorymoving = false
-    end)
+            workspace.Gravity = 196.2
+            chatshit("respawn me fuck")
+            game.Players.LocalPlayer.CharacterAdded:Wait()
+            vars.ivorymoving = false
+        end
+    )
 
     if not s then
         warn("ERROR MOVING PARTS\n\n" .. e)
@@ -733,13 +1164,11 @@ game.Players.LocalPlayer.Chatted:Connect(
 )
 
 --[[ COMMANDS ]]
---
 connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
     local splitted = msg:split(" ")
-        if splitted[1] ~= prefix .. "clrlogs" then
-            table.insert(commandlist, splitted[1])
-        end
-        if splitted[1] == prefix .. "silcrash" then -- persons 299 required / credits to knocks for this
+    if splitted[1] and #splitted[1] > 0 then
+        table.insert(commandlist, splitted[1])
+        if splitted[1] == prefix .. "silcrash" then
             for i = 1, 5 do
                 chatshit("size all .3")
             end
@@ -806,21 +1235,21 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     coroutine = coroutine.create(
                         function()
                             while blacklistedPlayers[player] do
-                                game.Players:Chat("freeze " .. player)
+                                chatshit("freeze " .. player)
                                 wait(0.1)
-                                game.Players:Chat("punish " .. player)
+                                chatshit("punish " .. player)
                                 wait(0.1)
-                                game.Players:Chat("blind " .. player)
+                                chatshit("blind " .. player)
                                 wait(0.1)
-                                game.Players:Chat(
+                                chatshit(
                                     "pm " ..
                                         player ..
                                             "\n\n" ..
-                                                JISATSU ..
+                                                ScriptName ..
                                                     "\n\n\nYou are currently blacklisted. Please consider leaving"
                                 )
                                 wait(0.1)
-                                game.Players:Chat("thaw " .. player)
+                                chatshit("thaw " .. player)
                                 wait(0.1)
                             end
                         end
@@ -834,10 +1263,10 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             if player and blacklistedPlayers[player] then
                 coroutine.yield(blacklistedPlayers[player].coroutine)
                 blacklistedPlayers[player] = nil
-                game.Players:Chat("respawn " .. player)
-                game.Players:Chat("unfreeze " .. player)
-                game.Players:Chat("unpunish " .. player)
-                game.Players:Chat("unblind " .. player)
+                chatshit("respawn " .. player)
+                chatshit("unfreeze " .. player)
+                chatshit("unpunish " .. player)
+                chatshit("unblind " .. player)
                 logn("Blacklist disabled for player: " .. player .. " You're welcome.")
             end
         elseif
@@ -962,13 +1391,32 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
         elseif splitted[1] == prefix .. "hidereg" then
             if workspace.Terrain._Game.Admin:FindFirstChild("Regen") then
-                move(workspace.Terrain._Game.Admin:FindFirstChild("Regen"), CFrame.new(157290.969, -29124.8887, -37825.0312, 0.999996841, -0.00250337017, -8.53495367e-05, 0.00250330311, 0.999996543, -0.000777005684, 8.7294371e-05, 0.000776789617, 0.999999702))
+                move(
+                    workspace.Terrain._Game.Admin:FindFirstChild("Regen"),
+                    CFrame.new(
+                        157290.969,
+                        -29124.8887,
+                        -37825.0312,
+                        0.999996841,
+                        -0.00250337017,
+                        -8.53495367e-05,
+                        0.00250330311,
+                        0.999996543,
+                        -0.000777005684,
+                        8.7294371e-05,
+                        0.000776789617,
+                        0.999999702
+                    )
+                )
             else
                 logn("Regen Not Loaded", 2)
             end
         elseif splitted[1] == prefix .. "fixreg" then
             if workspace.Terrain._Game.Admin:FindFirstChild("Regen") then
-                move(workspace.Terrain._Game.Admin:FindFirstChild("Regen"), CFrame.new(-7.16500044, 5.42999268, 94.7430038, 0, 0, -1, 0, 1, 0, 1, 0, 0))
+                move(
+                    workspace.Terrain._Game.Admin:FindFirstChild("Regen"),
+                    CFrame.new(-7.16500044, 5.42999268, 94.7430038, 0, 0, -1, 0, 1, 0, 1, 0, 0)
+                )
             else
                 logn("Regen Not Loaded", 2)
             end
@@ -1154,7 +1602,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             local paintname = string.sub(text, text:split(" ")[1]:len() + 2)
             if isfile(paintname .. ".json") then
                 local decoded = game:GetService("HttpService"):JSONDecode(readfile(paintname .. ".json"))
-                game.Players:Chat("gear me 18474459")
+                chatshit("gear me 18474459")
                 repeat
                     task.wait()
                 until game.Players.LocalPlayer.Backpack:FindFirstChild("PaintBucket")
@@ -1325,72 +1773,63 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
             ToServer(splitted[2], splitted[3])
         elseif splitted[1] == prefix .. "ez" then
-            game.Players:Chat("music 0000000000000000000007266001792")
-            game.Players:Chat("h n\n\n\n\n\n\n\n\n\nYoU ArE an\nI\nD\nI\nO")
-            game.Players:Chat("h n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n T")
+            chatshit("music 0000000000000000000007266001792")
+            chatshit("h n\n\n\n\n\n\n\n\n\nYoU ArE an\nI\nD\nI\nO")
+            chatshit("h n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n T")
             wait(1)
 
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
             wait(0.5)
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
             wait(0.5)
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
             wait(0.5)
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHAH")
             wait(0.1)
-            game.Players:Chat(
-                "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nYouAreAn\nI\nD\nI\nO"
-            )
-            game.Players:Chat(
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nYouAreAn\nI\nD\nI\nO")
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nT\n\n.exe\nLoaded [By Reiko - Made By Dizzy]"
             )
             wait(2)
 
-            game.Players:Chat(
-                "gear me 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000178076749"
-            )
-            wait(0.1)
-            game.Players.LocalPlayer.Backpack:WaitForChild("Emerald Knights of the Seventh Sanctum Sword and Shield").Parent =
-                game.Players.LocalPlayer.Character
-            wait(0.2)
             for i = 1, 100 do
-                game.Players:Chat("dog all all all")
+                chatshit("dog all all all")
             end
             for i = 1, 1000 do
-                game.Players:Chat("clone all all all")
+                chatshit("clone all all all")
             end
         elseif splitted[1] == prefix .. "errorcrash" then
-            game.Players:Chat("blind all all all all all all all all all")
-            game.Players:Chat(
+            chatshit("blind all all all all all all all all all")
+            chatshit(
                 "music  0 0 0 00 0 0 0 0 0 00 0 0 0  0 00 0 0 000 0  00  00  00  00 00 00 0 0 00 00 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0315006886"
             )
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
-            game.Players:Chat(
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDisconnected")
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---------------------------------------------------------------------------"
             )
-            game.Players:Chat(
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSame account                                            "
             )
-            game.Players:Chat(
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n                       launched game from differant"
             )
-            game.Players:Chat(
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ndevice. Reconnect if you                                         "
             )
-            game.Players:Chat(
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n                                    prefer to use this device."
             )
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n  Error          ")
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n          Code:")
-            game.Players:Chat("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Jisatsu.lua")
-            game.Players:Chat(
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n  Error          ")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n          Code:")
+            chatshit("h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Jisatsu.lua")
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Origin \n Empathy.lua - By Dizzy"
             )
-            game.Players:Chat(
+            chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---------------------------------------------------------------------------"
             )
             wait(0.5)
@@ -1407,6 +1846,24 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
             for i = 1, 200 do
                 chatshit("clone all all all fuck")
+            end
+        elseif splitted[1] == prefix .. "blacked" then
+            chatshit("respawn all")
+            chatshit("music 0000000000000000000007266001792")
+            chatshit("name all      ")
+            chatshit("time 0")
+            chatshit("fogcolor 0 0 0")
+            chatshit("fogend 0")
+            wait(0.5)
+            runCommand(prefix .. "silcrash", {})
+        elseif splitted[1] == prefix .. "cat" then
+            local Player = GetPlayers(splitted[2])
+            for i, v in pairs(Player) do
+                chatshit("hat " .. v.Name .. " 6077364164")
+                wait()
+                chatshit("hat " .. v.Name .. " 18292362512")
+                wait()
+                chatshit("hat " .. v.Name .. " 14826781593")
             end
         elseif splitted[1] == prefix .. "audiolog" then
             wait(0.1)
@@ -1471,18 +1928,18 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
         elseif splitted[1] == prefix .. "rocketkick" then
             for i, v in gp(splitted[2]) do
                 vars.rocketkicking = true
-                game.Players:Chat("setgrav " .. v.Name .. " 5000")
-                game.Players:Chat("speed " .. v.Name .. " 0")
+                chatshit("setgrav " .. v.Name .. " 5000")
+                chatshit("speed " .. v.Name .. " 0")
                 if v.Character.Humanoid.WalkSpeed > 0 then
                     v.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Wait()
                 end
                 for i = 1, 100 do
-                    game.Players:Chat("rocket/all all all fuck")
+                    chatshit("rocket/all all all fuck")
                 end
                 task.wait(0.3)
                 for i, plr in game.Players:GetPlayers() do
                     if plr ~= v then
-                        game.Players:Chat("unrocket/" .. plr.Name .. " fuck")
+                        chatshit("unrocket/" .. plr.Name .. " fuck")
                     end
                 end
                 repeat
@@ -1490,7 +1947,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     game.Players.LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
                         v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2) * CFrame.Angles(0, math.rad(180), 0)
-                    game.Players:Chat("rocket/ " .. v.Name .. " me " .. v.Name .. " fuck")
+                    chatshit("rocket/ " .. v.Name .. " me " .. v.Name .. " fuck")
                     game:GetService("RunService").RenderStepped:Wait()
                 until not vars.rocketkicking or not table.find(game.Players:GetPlayers(), v)
             end
@@ -1499,37 +1956,41 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 vars.rocketkicking = false
             end
         elseif splitted[1] == prefix .. "whitelist" then
-            for i, v in gp(splitted[2]) do
-                if not whitelisted[v.Name] then
-                    whitelisted[v.Name] = {}
-                    local con1 =
-                        v.Chatted:Connect(
-                        function(msg)
-                            if msg:sub(1, #prefix) == prefix then
-                                msg = msg:sub(#prefix + 1)
-                                local splitted = msg:split(" ")
-                                coroutine.wrap(
-                                    function()
-                                        runcmd(splitted[1], splitted, msg)
-                                    end
-                                )()
-                            end
-                        end
+            local Player = GetPlayers(splitted[2])
+
+            for i, v in pairs(Player) do
+                if v ~= game.Players.LocalPlayer and not table.find(Whitelisted, v.Name) then
+                    table.insert(Whitelisted, v.Name)
+                    game.Players:Chat(
+                        "pm " ..
+                            v.Name ..
+                                " You have been whitelisted to a script of mines.\n\nSay /wlcmds to Recieve your commands.\n\nScript was made by Reiko(mainly)."
                     )
-                    table.insert(whitelisted[v.Name], con1)
                 end
             end
         elseif splitted[1] == prefix .. "unwhitelist" then
-            for i, v in gp(splitted[2]) do
-                if whitelisted[v.Name] then
-                    for i, v in pairs(whitelisted[v.Name]) do
-                        if v.Connected then
-                            v:Disconnect()
-                        end
-                        v = nil
-                    end
+            local Player = GetPlayers(splitted[2])
+
+            for i, v in pairs(Player) do
+                if table.find(Whitelisted, v.Name) then
+                    table.remove(Whitelisted, table.find(Whitelisted, v.Name))
                 end
             end
+        elseif splitted[1] == prefix .. "whitelisted" then
+            local whitelisted = Whitelisted
+            local message = "Currently Whitelisted (" .. #whitelisted .. "): "
+            for i, v in pairs(whitelisted) do
+                if v ~= whitelisted[#whitelisted] then
+                    message = message .. v .. ", "
+                elseif #whitelisted ~= 1 then
+                    message = message .. "& " .. v .. "."
+                else
+                    message = message .. v .. "."
+                end
+            end
+            chatshit(
+                "h \n\n\n\n\n\n\n\n\n\n\n\nPERM WHITELISTED PLAYERS\n--------------------------------\n" .. message
+            )
         elseif splitted[1] == prefix .. "fixcam" then
             local function fixCam()
                 local lp = game.Players.LocalPlayer
@@ -1608,22 +2069,22 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
 
             wait(0.1)
-            game.Players:Chat("sit me")
+            chatshit("sit me")
             wait(1)
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
 
             wait(0.5)
-            game.Players:Chat("trip me")
+            chatshit("trip me")
             wait(0.3)
-            game.Players:Chat("respawn me")
+            chatshit("respawn me")
             wait(1)
             local Character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
             if Character then
@@ -1631,49 +2092,136 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
 
             wait(0.1)
-            game.Players:Chat("sit me")
+            chatshit("sit me")
             wait(1)
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
 
             wait(0.5)
-            game.Players:Chat("trip me")
+            chatshit("trip me")
             wait(0.3)
-            game.Players:Chat("respawn me")
+            chatshit("respawn me")
             wait(1)
             local Character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
             if Character then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-25.06, 8.38, -29.27)
             end
             wait(0.1)
-            game.Players:Chat("sit me")
+            chatshit("sit me")
             wait(1)
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
-            game.Players:Chat("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
+            chatshit("unpunish me")
 
             wait(0.5)
-            game.Players:Chat("trip me")
+            chatshit("trip me")
             wait(0.3)
-            game.Players:Chat("respawn me")
+            chatshit("respawn me")
+        elseif splitted[1] == prefix .. "anti" then
+            Loops.antiabuse = true
+            repeat
+                game:GetService("RunService").RenderStepped:Wait()
+                pcall(
+                    function()
+                        if chr and chr.Parent == game.Lighting then
+                            chatshit("unpunish me")
+                            chr.Parent = workspace
+                        end
+                        if lp.PlayerGui:FindFirstChild("EFFECTGUIBLIND") then
+                            lp.PlayerGui:FindFirstChild("EFFECTGUIBLIND"):Destroy()
+                            chatshit("unblind me")
+                        end
+                        if chr and chr.Humanoid and chr.Humanoid.Health <= 0 then
+                            chatshit("reset me")
+                        end
+                        if chr and chr:FindFirstChild("Rocket") then
+                            for i, v in pairs(chr:GetChildren()) do
+                                if v.Name == "Rocket" then
+                                    v:Destroy()
+                                end
+                            end
+                            if PersonsAdmin then
+                                chatshit("unrocket/me")
+                            else
+                                chatshit("reset me")
+                            end
+                        end
+                        if chr and chr:FindFirstChild("ice") then
+                            chatshit("unfreeze me")
+                            chr:FindFirstChild("ice"):Destroy()
+                            for i, v in pairs(chr:GetDescendants()) do
+                                if v:IsA("BasePart") then
+                                    v.Anchored = false
+                                end
+                            end
+                        end
+                        if chr and chr:FindFirstChild("Addon") then
+                            chr:FindFirstChild("Addon"):Destroy()
+                            chatshit("reset me")
+                        end
+                        if
+                            chr and chr.Head and chr.Torso and
+                                game.Players.LocalPlayer:DistanceFromCharacter(
+                                    game.Players.LocalPlayer.Character.Torso.Position
+                                ) == 0
+                         then
+                            chatshit("reset me")
+                        end
+                        if game:GetService("Workspace").Terrain["_Game"].Folder:FindFirstChild(plr.Name .. "'s jail") then
+                            game:GetService("Workspace").Terrain["_Game"].Folder:FindFirstChild(plr.Name .. "'s jail"):Destroy(
+
+                            )
+                            chatshit("unjail me")
+                        end
+                        if chr and chr.Torso and chr.Torso:FindFirstChild("SPINNER") then
+                            chr.Torso:FindFirstChild("SPINNER"):Destroy()
+                            chatshit("unspin me")
+                        end
+                        if plr.PlayerGui:FindFirstChild("NoClip") then
+                            plr.PlayerGui:FindFirstChild("NoClip"):Destroy()
+                            if chr and chr.Torso then
+                                chr.Torso.Anchored = false
+                            end
+                            if chr and chr.Humanoid then
+                                chr.Humanoid.PlatformStand = false
+                            end
+                            chatshit("clip me")
+                        end
+                    end
+                )
+            until not Loops.antiabuse
+        elseif splitted[1] == prefix .. "breakcam" then
+            for i, v in pairs(GetPlayers(splitted[2])) do
+                chatshit("tp " .. v.Name .. " me")
+                chatshit("gear me 68354832")
+                repeat
+                    wait()
+                until game.Players.LocalPlayer.Backpack:FindFirstChild("BlizzardWand")
+                local wand = game.Players.LocalPlayer.Backpack:FindFirstChild("BlizzardWand")
+                wand.Parent = plr.Character
+                wait(0.2)
+                wand:Activate()
+                wait(0.4)
+                chatshit("reset " .. v.Name)
+            end
         elseif splitted[1] == prefix .. "cloneai" then
-            game.Players:Chat("pm me [Jisatsu]\nCredits to Reaper & ii'S Stupid admin for the command idea.")
+            chatshit("pm me [Jisatsu]\nCredits to Reaper & ii'S Stupid admin for the command idea.")
             local cloneCount = tonumber(splitted[2]) or 1
             for i = 1, cloneCount do
-                game.Players:Chat("gear me 72644644")
+                chatshit("gear me 72644644")
                 wait()
             end
             wait(0.25)
@@ -1789,6 +2337,80 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("fogstart 50")
                 chatshit("fogcolor 30 20 40")
                 chatshit("glow all 50 30 80")
+            end
+        elseif splitted[1] == prefix .. "pagesreminder" then
+            for i, v in pairs(GetPlayers(splitted[2])) do
+                if not collectpages then
+                    collectpages = true
+                    chatshit("size me  2.000000123827312767867524369")
+
+                    chatshit("invis me")
+                    chatshit("brightness 0")
+                    chatshit("fogend 30")
+                    chatshit("fogcolor 0 0 0")
+                    chatshit("size " .. v.Name .. " 2.000000123827312767867524369")
+                    chatshit(
+                        "hat me 00000000000000000000000000000000000000000000000000000000000000000000000000000000000017401056338"
+                    )
+                    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+                        "Just a reminder..",
+                        "All"
+                    )
+                    wait(.2)
+                    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+                        "You got 0/8 pages..",
+                        "All"
+                    )
+                    wait()
+                    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+                        "Make sure to collect them..",
+                        "All"
+                    )
+                    local function equiptools()
+                        for _, v in ipairs(game.Players.LocalPlayer:FindFirstChildOfClass("Backpack"):GetChildren()) do
+                            if v:IsA("Tool") then
+                                v.Parent = game.Players.LocalPlayer.Character
+                            end
+                        end
+                    end
+                    for i = 1, 5 do
+                        chatshit("gear me 94794847")
+                    end
+                    repeat
+                        task.wait()
+                    until #game.Players.LocalPlayer.Backpack:GetChildren() >= 5
+                    equiptools()
+                    for i = 1, 1000 do
+                        pcall(
+                            function()
+                                local RandomPlayerFromStuff = GetPlayers(args[1])
+                                RandomPlayerFromStuff = RandomPlayerFromStuff[math.random(1, #RandomPlayerFromStuff)]
+                                game.Players.LocalPlayer.Character.RocketJumper.FireRocket:FireServer(
+                                    RandomPlayerFromStuff.Character.Head.Position,
+                                    Vector3.new(math.random(-200, 200), math.random(0, 50), math.random(-200, 200))
+                                )
+                            end
+                        )
+                    end
+                    wait(2)
+                    chatshit("removetools me")
+                    wait(5)
+                    chatshit("fix")
+                    chatshit("reset me")
+                    chatshit("clr")
+                    collectpages = false
+                else
+                    return
+                end
+            end
+        elseif splitted[1] == prefix .. "cat" then
+            local Player = GetPlayers(splitted[2])
+            for i, v in pairs(Player) do
+                chatshit("hat " .. v.Name .. " 6077364164")
+                wait()
+                chatshit("hat " .. v.Name .. " 18292362512")
+                wait()
+                chatshit("hat " .. v.Name .. " 14826781593")
             end
         elseif splitted[1] == prefix .. "cmds" then
             local commandlist = fetchAndExtractCommands(scriptURL)
@@ -2922,46 +3544,46 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             )
         elseif splitted[1] == prefix .. "bend" then
             local target = splitted[2]
-            game.Players:Chat("rocket/" .. target)
+            chatshit("rocket/" .. target)
             wait(0.30)
-            game.Players:Chat("freeze " .. target)
-            game.Players:Chat("unrocket/" .. target)
+            chatshit("freeze " .. target)
+            chatshit("unrocket/" .. target)
             wait(0.30)
-            game.Players:Chat("name " .. target .. " " .. game.Players[target].DisplayName)
+            chatshit("name " .. target .. " " .. game.Players[target].DisplayName)
             wait(0.30)
-            game.Players:Chat("thaw " .. target)
+            chatshit("thaw " .. target)
             wait(0.30)
-            game.Players:Chat("unseizure " .. target)
-            game.Players:Chat("tp " .. target .. " " .. target)
-            game.Players:Chat("sit " .. target)
+            chatshit("unseizure " .. target)
+            chatshit("tp " .. target .. " " .. target)
+            chatshit("sit " .. target)
         elseif splitted[1] == prefix .. "lay" then
             local target = splitted[2]
-            game.Players:Chat("seizure " .. target)
+            chatshit("seizure " .. target)
             wait(0.30)
-            game.Players:Chat("reset " .. target)
+            chatshit("reset " .. target)
             wait(0.30)
-            game.Players:Chat("freeze " .. target)
+            chatshit("freeze " .. target)
             wait(0.30)
-            game.Players:Chat("name " .. target .. " " .. game.Players[target].DisplayName)
+            chatshit("name " .. target .. " " .. game.Players[target].DisplayName)
             wait(0.30)
-            game.Players:Chat("thaw " .. target)
+            chatshit("thaw " .. target)
             wait(0.30)
-            game.Players:Chat("sit " .. target)
+            chatshit("sit " .. target)
         elseif splitted[1] == prefix .. "maid" then
             local target = splitted[2]
-            game.Players:Chat("shirt " .. target .. " 11576289536")
-            game.Players:Chat("pants " .. target .. " 6094401840")
+            chatshit("shirt " .. target .. " 11576289536")
+            chatshit("pants " .. target .. " 6094401840")
         elseif splitted[1] == prefix .. "furry" then
             local target = splitted[2]
-            game.Players:Chat("unpackage " .. target)
+            chatshit("unpackage " .. target)
             wait(0.05)
-            game.Players:Chat("unhat " .. target)
+            chatshit("unhat " .. target)
             wait(0.05)
-            game.Players:Chat("paint " .. target .. " Institutional white")
-            game.Players:Chat("hat " .. target .. " 10563319994")
-            game.Players:Chat("hat " .. target .. " 12578728695")
-            game.Players:Chat("shirt " .. target .. " 10571467676")
-            game.Players:Chat("pants " .. target .. " 10571468508")
+            chatshit("paint " .. target .. " Institutional white")
+            chatshit("hat " .. target .. " 10563319994")
+            chatshit("hat " .. target .. " 12578728695")
+            chatshit("shirt " .. target .. " 10571467676")
+            chatshit("pants " .. target .. " 10571468508")
         elseif splitted[1] == prefix .. "fmusic" then
             local geared
             if args[5] then
@@ -3014,45 +3636,356 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 end
             end
         elseif splitted[1] == prefix .. "gearbl" then
-            for _Index, Target in pairs(GetPlayer(splitted[2])) do
-                _G.cagecheck = false
-                chatshit("gear me 00000000000000000082357101")
-                if _G.cagecheck == false then
-                    _G.cagecheck = true
-                    repeat
-                        task.wait()
-                    until plr.Backpack:FindFirstChild("PortableJustice")
-                    plr.Backpack.PortableJustice.Parent = plr.Character
-                    repeat
-                        task.wait()
-                    until game.Workspace[plr.Name].PortableJustice:FindFirstChild("MouseClick")
-                    local oldpos = plr.Character.HumanoidRootPart.CFrame
-                    plr.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame
-                    chatshit("unff " .. Target.Name)
-                    repeat
-                        coroutine.wrap(
-                            function()
-                                game.Workspace[plr.Name].PortableJustice.MouseClick:FireServer(
-                                    game.Workspace[Target.Name]
+            local fixer = splitted[2]
+            for i = 2, #splitted do
+                fixer = fixer .. " " .. splitted[i]
+            end
+            local BlacklistedTools = fixer:split(";")
+            Loops.blacklisttools = true
+            repeat
+                game:GetService("RunService").RenderStepped:Wait()
+                pcall(
+                    function()
+                        for i, v in pairs(game.Players:GetPlayers()) do
+                            for i, too in pairs(BlacklistedTools) do
+                                spawn(
+                                    function()
+                                        if v and v.Character and v.Character:FindFirstChild(too) then
+                                            v.Character:FindFirstChild(too):Destroy()
+                                            chatshit("removetools " .. v.Name)
+                                            chatshit("reset " .. v.Name)
+                                            chatshit("kill " .. v.Name)
+                                            chatshit(
+                                                "h/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbrooooo " ..
+                                                    v.DisplayName ..
+                                                        " just tried to use unallowed gears\npoint and laugh"
+                                            )
+                                        end
+                                    end
+                                )
+                                spawn(
+                                    function()
+                                        if v.Backpack:FindFirstChild(too) then
+                                            v.Backpack:FindFirstChild(too):Destroy()
+                                            chatshit("removetools " .. v.Name)
+                                            chatshit("reset " .. v.Name)
+                                            chatshit(
+                                                "h/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbrooooo " ..
+                                                    v.DisplayName ..
+                                                        " just tried to use unallowed gears\npoint and laugh"
+                                            )
+                                        end
+                                    end
                                 )
                             end
-                        )()
-                        task.wait()
-                    until Target.Character:FindFirstChild("DisableBackpack")
-                    coroutine.wrap(
-                        function()
-                            chatshit("reset me")
-                            chatshit("reset " .. Target.Name)
-                            _G.cagecheck = false
-                            Target.CharacterAdded:Wait()
-                            chatshit("pm/" .. Target.Name .. "/get gearbanned lol")
                         end
-                    )()
-                    plr.CharacterAdded:wait()
-                    plr.Character:WaitForChild("HumanoidRootPart")
-                    plr.Character.HumanoidRootPart.CFrame = oldpos
+                    end
+                )
+            until not Loops.blacklisttools
+        elseif splitted[1] == prefix .. "ungearbl" then
+            Loops.blacklisttools = false
+        elseif splitted[1] == prefix .. "reanimate" then
+            if PersonsAdmin then
+                local char = game.Players.LocalPlayer.Character
+                char.Archivable = true
+
+                local fakechar = char:Clone()
+                fakechar.Name = "_chariiStupidAdmin"
+                fakechar.Parent = workspace
+
+                game.Players.LocalPlayer.Character = fakechar
+
+                fakechar.Animate.Disabled = true
+                fakechar.Animate.Disabled = false
+
+                Loops.reanimate = true
+
+                local Limbs = {}
+                Limbs.LA = Instance.new("Part")
+                Limbs.RA = Instance.new("Part")
+                Limbs.LL = Instance.new("Part")
+                Limbs.RL = Instance.new("Part")
+
+                for i, v in pairs(Limbs) do
+                    v.Name = "Temporary"
                 end
+
+                local LimbNames = {
+                    ["LA"] = "Left Arm",
+                    ["RA"] = "Right Arm",
+                    ["LL"] = "Left Leg",
+                    ["RL"] = "Right Leg"
+                }
+
+                Connections.reanimate =
+                    workspace.Terrain["_Game"].Folder.ChildAdded:Connect(
+                    function(v)
+                        if v.Name ~= "Part" then
+                            return
+                        end
+                        if not v:IsA("BasePart") then
+                            return
+                        end
+                        if v.Size ~= Vector3.new(1, 2, 1) then
+                            return
+                        end
+
+                        for i, v2 in pairs(Limbs) do
+                            if v2.Parent == nil then
+                                Limbs[i] = v
+                                break
+                            end
+                        end
+                    end
+                )
+
+                local fixLimbsDebounce = false
+                local function fixLimbs()
+                    if fixLimbsDebounce then
+                        return
+                    end
+                    print("Limbfix requested")
+
+                    fixLimbsDebounce = true
+                    spawn(
+                        function()
+                            wait(1)
+                            fixLimbsDebounce = false
+                        end
+                    )
+
+                    for i, v in pairs(Limbs) do
+                        if v.Parent == nil then
+                            chatshit("part/1/2/1")
+                        end
+                    end
+                end
+
+                fixLimbs()
+
+                spawn(
+                    function()
+                        while Loops.reanimate do
+                            game:GetService("RunService").RenderStepped:Wait()
+                            char = workspace[game.Players.LocalPlayer.Name]
+                            for i, v in pairs(char:GetDescendants()) do
+                                if v:IsA("BasePart") and v.CanCollide then
+                                    v.CanCollide = false
+                                end
+                                if v:IsA("BasePart") then
+                                    v.Transparency = 1
+                                    v.Velocity = Vector3.new()
+                                    v.RotVelocity = Vector3.new()
+                                end
+                            end
+
+                            if char:FindFirstChild("Left Arm") then
+                                chatshit("removelimbs me")
+                                char:FindFirstChild("Left Arm"):Destroy()
+                            end
+
+                            char.HumanoidRootPart.CFrame = fakechar.Torso.CFrame
+                            if game.Players.LocalPlayer.Character ~= fakechar then
+                                game.Players.LocalPlayer.Character = fakechar
+                            end
+
+                            for i, v in pairs(Limbs) do
+                                if v.Parent ~= nil then
+                                    v.CFrame = fakechar[LimbNames[i]].CFrame
+                                    v.CanCollide = false
+                                    v.Velocity = Vector3.new()
+                                    v.RotVelocity = Vector3.new()
+                                else
+                                    fixLimbs()
+                                end
+                            end
+                        end
+                    end
+                )
+            else
+                logn("This command does not work without Person's Admin.")
             end
+        elseif splitted[1] == prefix .. "unreanimate" then
+            Loops.reanimate = false
+            Connections.reanimate:Disconnect()
+            workspace["_chariiStupidAdmin"]:Destroy()
+            chatshit("reset me")
+        elseif splitted[1] == prefix .. "fixreanimate" then
+            runCommand(prefix .. "unreanimate", {})
+            local chr = game.Players.LocalPlayer.Character
+            repeat
+                wait()
+            until not chr or chr.Parent == nil
+            runCommand(prefix .. "reanimate", {})
+        elseif splitted[1] == prefix .. "unpartvisualizer" then
+            Connections.partvisualizera:Disconnect()
+            Connections.partvisualizerb:Disconnect()
+            Loops.partvisualizer = false
+        elseif splitted[1] == prefix .. "unpartvisualizerwebsocket" then
+            Connections.partvisualizera:Disconnect()
+            Connections.partvisualizerb:Disconnect()
+            Connections.partvisualizerc:Disconnect()
+            Loops.partvisualizera = false
+            Loops.partvisualizerb = false
+        elseif spltited[1] == prefix .. "fixnet" then
+            fixNet()
+        elseif splitted[1] == prefix .. "attachtool" then
+            local btool = Instance.new("Tool", game.Players.LocalPlayer.Backpack)
+            local SelectionBox = Instance.new("SelectionBox", game.Workspace)
+            local hammer = Instance.new("Part")
+            hammer.Parent = btool
+            hammer.Name = ("Handle")
+            hammer.CanCollide = false
+            hammer.Anchored = false
+
+            SelectionBox.Name = "oof"
+            SelectionBox.LineThickness = 0.05
+            SelectionBox.Adornee = nil
+            SelectionBox.Color3 = Color3.fromRGB(0, 0, 255)
+            SelectionBox.Visible = false
+            btool.Name = "Attach Tool"
+            btool.RequiresHandle = false
+            local IsEquipped = false
+            local Mouse = game.Players.LocalPlayer:GetMouse()
+
+            btool.Equipped:connect(
+                function()
+                    IsEquipped = true
+                    SelectionBox.Visible = true
+                    SelectionBox.Adornee = nil
+                end
+            )
+
+            btool.Unequipped:connect(
+                function()
+                    IsEquipped = false
+                    SelectionBox.Visible = false
+                    SelectionBox.Adornee = nil
+                end
+            )
+
+            btool.Activated:connect(
+                function()
+                    if IsEquipped then
+                        btool.Parent = game.Chat
+                        local ex = Instance.new "Explosion"
+                        ex.BlastRadius = 0
+                        ex.Position = Mouse.Target.Position
+                        ex.Parent = game.Workspace
+                        local target = Mouse.Target
+                        function movepart()
+                            local cf = game.Players.LocalPlayer.Character.HumanoidRootPart
+                            local looping = true
+                            spawn(
+                                function()
+                                    while true do
+                                        game:GetService("RunService").Heartbeat:Wait()
+                                        game.Players.LocalPlayer.Character["Humanoid"]:ChangeState(11)
+                                        cf.CFrame =
+                                            target.CFrame *
+                                            CFrame.new(
+                                                -1 * (target.Size.X / 2) -
+                                                    (game.Players.LocalPlayer.Character["Torso"].Size.X / 2),
+                                                0,
+                                                0
+                                            )
+                                        if not looping then
+                                            break
+                                        end
+                                    end
+                                end
+                            )
+                            spawn(
+                                function()
+                                    while looping do
+                                        wait(.1)
+                                        chatshit("unpunish me")
+                                    end
+                                end
+                            )
+                            wait(0.25)
+                            looping = false
+                        end
+                        movepart()
+                        game.Chat["Attach Tool"].Parent = plr.Backpack
+                        chr.HumanoidRootPart.CFrame = pos
+                        spawn(
+                            function()
+                                wait(3)
+                                if game.Chat:FindFirstChild("Attach Tool") then
+                                    game.Chat["Attach Tool"]:Destroy()
+                                end
+                            end
+                        )
+                    -- to here
+                    end
+                end
+            )
+
+            while true do
+                SelectionBox.Adornee = Mouse.Target or nil
+                wait(0.1)
+            end
+        elseif splitted[1] == prefix .. "yoink" then
+            chatshit("/regen")
+            wait(.1)
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-13, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-17, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-21, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-25, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-29, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-33, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-37, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-41, 9, 94)
+            wait()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-45, 9, 94)
+            wait(0.4)
+            chatshit(":respawn me                                            FUCK")
+        elseif splitted[1] == prefix .. "antivg" then
+            Loops.anticrash = true
+            repeat
+                game:GetService("RunService").RenderStepped:Wait()
+                pcall(
+                    function()
+                        for i, v in pairs(game.Players:GetPlayers()) do
+                            spawn(
+                                function()
+                                    if v and v.Character and v.Character:FindFirstChild("VampireVanquisher") then
+                                        v.Character:FindFirstChild("VampireVanquisher"):Destroy()
+                                        chatshit("removetools " .. v.Name)
+                                        chatshit("reset " .. v.Name)
+                                        chatshit("kill " .. v.Name)
+                                        chatshit(
+                                            "h \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbrooooo " ..
+                                                v.DisplayName .. " just tried to crash man\npoint and laugh"
+                                        )
+                                    end
+                                end
+                            )
+                            spawn(
+                                function()
+                                    if v.Backpack:FindFirstChild("OrinthianSwordAndShield") then
+                                        v.Backpack:FindFirstChild("OrinthianSwordAndShield"):Destroy()
+                                        chatshit("removetools " .. v.Name)
+                                        chatshit("reset " .. v.Name)
+                                        chatshit(
+                                            "h/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbrooooo " ..
+                                                v.DisplayName .. " just tried to crash man\npoint and laugh"
+                                        )
+                                    end
+                                end
+                            )
+                        end
+                    end
+                )
+            until not Loops.antiservercrash
         elseif splitted[1] == prefix .. "findhat" then
             local target = splitted[2]
             local hatName = table.concat(splitted, " ", 3)
@@ -3062,7 +3995,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     hatName
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
-            game.Players:Chat("hat " .. target .. " " .. tostring(decode["data"][1]["id"]))
+            chatshit("hat " .. target .. " " .. tostring(decode["data"][1]["id"]))
         elseif splitted[1] == prefix .. "findhair" then
             local target = splitted[2]
             local hairName = table.concat(splitted, " ", 3)
@@ -3072,7 +4005,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     hairName
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
-            game.Players:Chat("hair " .. target .. " " .. tostring(decode["data"][1]["id"]))
+            chatshit("hair " .. target .. " " .. tostring(decode["data"][1]["id"]))
         elseif splitted[1] == prefix .. "findface" then
             local target = splitted[2]
             local faceName = table.concat(splitted, " ", 3)
@@ -3082,7 +4015,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     faceName
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
-            game.Players:Chat("face " .. target .. " " .. tostring(decode["data"][1]["id"]))
+            chatshit("face " .. target .. " " .. tostring(decode["data"][1]["id"]))
         elseif splitted[1] == prefix .. "findshirt" then
             local target = splitted[2]
             local shirtName = table.concat(splitted, " ", 3)
@@ -3092,7 +4025,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     shirtName
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
-            game.Players:Chat("shirt " .. target .. " " .. tostring(decode["data"][1]["id"]))
+            chatshit("shirt " .. target .. " " .. tostring(decode["data"][1]["id"]))
         elseif splitted[1] == prefix .. "findpants" then
             local target = splitted[2]
             local pantsName = table.concat(splitted, " ", 3)
@@ -3102,7 +4035,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     pantsName
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
-            game.Players:Chat("pants " .. target .. " " .. tostring(decode["data"][1]["id"]))
+            chatshit("pants " .. target .. " " .. tostring(decode["data"][1]["id"]))
         elseif splitted[1] == prefix .. "checkperm" then
             local target = splitted[2]
             local has = checkGamepass(game.Players[target], 66254)
@@ -3121,8 +4054,8 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
         elseif splitted[1] == prefix .. "check" then
             local target = splitted[2]
-            game.Players:Chat(prefix .. "checkperm " .. target)
-            game.Players:Chat(prefix .. "checkperson " .. target)
+            chatshit(prefix .. "checkperm " .. target)
+            chatshit(prefix .. "checkperson " .. target)
         elseif splitted[1] == prefix .. "unantikick" then -- credits knocks
             if connections.antikark then
                 connections.antikark:Disconnect()
@@ -3131,21 +4064,24 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 logn("Anti Collision Crash is not active.")
             end
         elseif splitted[1] == prefix .. "breakvel" then
-            local targetName = splitted[2]
-            if targetName then
-                chatshit("stun" .. targetName)
-                for i = 1, 48 do
-                    chatshit("unpunish" .. targetName)
-                end
-                chatshit("seizure" .. targetName)
-                chatshit("unskydive" .. targetName)
-                for i = 1, 10 do
-                    chatshit(
-                        "pm/" ..
-                            targetName ..
-                                "/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n ụ̲ṛ̲ a f̲ạ̲ɡ̲ɡ̲ọ̲ṭ̲ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-                    )
-                end
+            for i, v in pairs(GetPlayers(spltited[2])) do
+                chatshit("unpunish " .. v.Name)
+                wait()
+                chatshit("invis " .. v.Name)
+                chatshit("reset " .. v.Name)
+                chatshit("invisible " .. v.Name)
+                chatshit("kill " .. v.Name)
+                chatshit("trip " .. v.Name)
+                chatshit("setgrav " .. v.Name .. " -inf")
+                wait(.1)
+                chatshit("invisible " .. v.Name)
+                chatshit("unpunish " .. v.Name .. " " .. v.Name .. " " .. v.Name)
+                wait(.2)
+                chatshit("invisible " .. v.Name)
+                wait(.2)
+                chatshit("reset " .. v.Name)
+                wait(.15)
+                chatshit("punish " .. v.Name .. " " .. v.Name .. " " .. v.Name)
             end
         elseif splitted[1] == prefix .. "fixfilter" then -- credits cxo for this
             for i = 1, 25 do
@@ -3583,7 +4519,7 @@ end)]]
             local function sendPlaylistReminder()
                 task.wait(3)
                 while true do
-                    game.Players:Chat(
+                    chatshit(
                         "m/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSoar's Playlist❤️\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                     )
                     wait(math.random(60, 140))
@@ -3605,7 +4541,7 @@ end)]]
             local function sendPlaylistReminder()
                 task.wait(3)
                 while true do
-                    game.Players:Chat(
+                    chatshit(
                         "m/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSoar's Playlist❤️\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
                     )
                     wait(math.random(60, 140))
@@ -3646,7 +4582,7 @@ end)]]
                     end
 
                     if not wasPaused then
-                        game.Players:Chat("h/ \n\n\nPaused\n\n\n")
+                        chatshit("h/ \n\n\nPaused\n\n\n")
                         wasPaused = true
                     end
                     wait()
@@ -3815,12 +4751,10 @@ end)]]
             game.Players.LocalPlayer.Chatted:Connect(
                 function(msg)
                     if string.sub(msg:lower(), 1, #prefix + 5) == prefix .. "clean" then
-                        game.Players:Chat("fix")
-                        game.Players:Chat("removejails")
-                        game.Players:Chat("removeclones")
-                        game.Players:Chat(
-                            "ungear me                                                               others fuck"
-                        )
+                        chatshit("fix")
+                        chatshit("removejails")
+                        chatshit("removeclones")
+                        chatshit("ungear me                                                               others fuck")
                     end
                 end
             )
@@ -4433,20 +5367,20 @@ end)]]
                 splitted[1] == prefix .. "hkick"
          then
             for i, v in gp(splitted[2]) do
-                game.Players:Chat("respawn " .. v.Name .. "                                              FUCK")
+                chatshit("respawn " .. v.Name .. "                                              FUCK")
                 v.CharacterAdded:Wait()
-                game.Players:Chat("blind " .. v.Name .. "                                                FUCK")
+                chatshit("blind " .. v.Name .. "                                                FUCK")
                 for i = 1, 5 do
-                    game.Players:Chat("skydive " .. v.Name .. " " .. v.Name .. " " .. v.Name .. "                FUCK")
+                    chatshit("skydive " .. v.Name .. " " .. v.Name .. " " .. v.Name .. "                FUCK")
                 end
-                game.Players:Chat("size " .. v.Name .. " 9.9")
-                game.Players:Chat("size " .. v.Name .. " 10")
-                game.Players:Chat("unseizure " .. v.Name .. " " .. v.Name .. "                               FUCK")
+                chatshit("size " .. v.Name .. " 9.9")
+                chatshit("size " .. v.Name .. " 10")
+                chatshit("unseizure " .. v.Name .. " " .. v.Name .. "                               FUCK")
                 task.wait(0.1)
-                game.Players:Chat("freeze " .. v.Name .. "                                               FUCK")
-                game.Players:Chat("invisible " .. v.Name .. "                                            FUCK")
+                chatshit("freeze " .. v.Name .. "                                               FUCK")
+                chatshit("invisible " .. v.Name .. "                                            FUCK")
                 for i = 1, 100 do
-                    game.Players:Chat("hat " .. v.Name .. " 0000000000000000000000000000000000000000000018219890448")
+                    chatshit("hat " .. v.Name .. " 0000000000000000000000000000000000000000000018219890448")
                 end
                 task.delay(
                     3,
@@ -4459,7 +5393,7 @@ end)]]
                                         break
                                     end
                                     for i = 1, 100 do
-                                        game.Players:Chat(
+                                        chatshit(
                                             "pm " ..
                                                 v.Name ..
                                                     " 🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️🤦‍♀️"
@@ -5149,7 +6083,7 @@ end)
                             0.677816927
                         )
                         wait(0.25)
-                        game.Players:Chat("tp " .. v.Name .. " me")
+                        chatshit("tp " .. v.Name .. " me")
                     end
                     wait(0.5)
                     for i, v in pairs(GetPlayers(args[2])) do
@@ -5169,7 +6103,7 @@ end)
                             -0.709251344
                         )
                         wait(0.25)
-                        game.Players:Chat("tp " .. v.Name .. " me")
+                        chatshit("tp " .. v.Name .. " me")
                     end
                 end
 
@@ -5205,17 +6139,17 @@ end)
                 )
 
                 for i = 1, 9 do
-                    game.Players:Chat("part/10/2.5/10")
+                    chatshit("part/10/2.5/10")
                     wait(0.5)
                 end
                 wait(0.5)
                 for i = 1, 4 do
-                    game.Players:Chat("part/1/5/1")
+                    chatshit("part/1/5/1")
                     wait(0.5)
                 end
                 wait(0.5)
                 for i = 1, 12 do
-                    game.Players:Chat("part/1/1/9")
+                    chatshit("part/1/1/9")
                     wait(0.5)
                 end
                 wait()
@@ -5307,6 +6241,7 @@ end)
                 task.wait(1.5)
             end
         end
+    end
     end
 )
 
