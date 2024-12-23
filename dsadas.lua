@@ -632,6 +632,12 @@ function checkGamepass(Target, ID)
     end
 end
 
+-- command returner
+local scriptURL = "https://raw.githubusercontent.com/pnhp0jE487256o2V43xc/a/refs/heads/main/dsadas.lua"
+commandlist = fetchAndExtractCommands(scriptURL)
+
+-- end command return(er)
+
 Quotes = {
     "i completely cleared a khols admin server",
     "What every tool in AdminJoy looks like when doing the command ;alltools",
@@ -1332,11 +1338,18 @@ game.Players.LocalPlayer.Chatted:Connect(
 )
 
 --[[ COMMANDS ]]
-connections.commands =
-    game.Players.LocalPlayer.Chatted:Connect(
-    function(msg)
-        local splitted = msg:split(" ")
-        table.insert(commandlist, splitted[1])
+connections.commands = game.Players.LocalPlayer.Chatted:Connect(function(msg)
+    local splitted = msg:split(" ")
+    if Settings.prefix and splitted[1] == Settings.prefix .. "cmds" then
+        if consoleOn then 
+            print("-:COMMANDS ["..tostring(#commandlist).."]:-")
+            for _, v in ipairs(commandlist) do
+                if v ~= "fixfilter" and v ~= "<fixfilter" then
+                    print(v)
+                end
+            end
+        end
+    end
         if prefix and splitted[1] == prefix .. "silcrash" then
             for i = 1, 5 do
                 chatshit("size all .3")
